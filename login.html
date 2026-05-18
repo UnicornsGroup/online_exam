@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="client-settings.js"></script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen font-sans flex items-center justify-center p-4 select-none">
+
+    <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full space-y-6 shadow-2xl">
+        <div class="text-center space-y-3">
+            <img id="dynamicLoginLogoNode" src="" alt="Institute Logo" class="h-16 w-auto object-contain mx-auto">
+            <div>
+                <h2 id="dynamicLoginTitleNode" class="text-xl font-black text-white uppercase tracking-tight">Loading Portal...</h2>
+                <p id="dynamicLoginTaglineNode" class="text-xs text-gray-400 font-mono mt-1"></p>
+            </div>
+        </div>
+
+        <form id="portalAuthenticationForm" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Email Address</label>
+                <input type="email" id="authEmailInputField" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
+            </div>
+            <div>
+                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Secret Password</label>
+                <input type="password" id="authPasswordInputField" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
+            </div>
+            <button type="submit" id="authSubmitActionButton" class="w-full text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transition-all">
+                Sign In to Account
+            </button>
+        </form>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module">
+        window.addEventListener('DOMContentLoaded', () => {
+            const ui = window.clientPortalSettings;
+            
+            // ⚡ Dynamic Branding Injection
+            if (ui) {
+                document.title = `${ui.instituteName} - Secure Login`;
+                document.getElementById('dynamicLoginLogoNode').src = ui.brandedLogoUrl;
+                document.getElementById('dynamicLoginTitleNode').textContent = ui.instituteName;
+                document.getElementById('dynamicLoginTaglineNode').textContent = ui.taglineText;
+                
+                const submitBtn = document.getElementById('authSubmitActionButton');
+                submitBtn.className = `w-full bg-gradient-to-r from-${ui.accentColorClass} to-${ui.hoverColorClass} text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transform transition-all active:scale-[0.99]`;
+            }
+
+            // Form Login Logic Integration Layer
+            document.getElementById('portalAuthenticationForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('authEmailInputField').value.trim();
+                const pass = document.getElementById('authPasswordInputField').value;
+
+                try {
+                    await window.signInWithEmailAndPassword(window.auth, email, pass);
+                    window.location.replace("dashboard.html");
+                } catch(err) {
+                    alert("Authentication Failure: Invalid credential vector mappings.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

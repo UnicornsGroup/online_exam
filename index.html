@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="client-settings.js"></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center h-screen">
+    <div class="text-center">
+        <div class="mb-6">
+            <img id="dynamicSplashLogoNode" src="assets/logo/logo.png" alt="Logo" class="mx-auto h-20 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Coaching+Logo'">
+        </div>
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+        <p class="mt-4 text-gray-400 text-sm tracking-wide">Securing route connection...</p>
+    </div>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module">
+        window.addEventListener('DOMContentLoaded', () => {
+            // ⚡ Pull values directly from client-settings.js dynamically
+            const config = window.clientPortalSettings;
+            if (config) {
+                document.title = `${config.instituteName} - Portal Gateway`;
+                document.getElementById('dynamicSplashLogoNode').src = config.brandedLogoUrl;
+            }
+
+            const checkFirebase = setInterval(() => {
+                if (window.auth) {
+                    clearInterval(checkFirebase);
+                    window.onAuthStateChanged(window.auth, async (user) => {
+                        if (user) {
+                            try {
+                                const userDoc = await window.getDoc(window.doc(window.db, "users", user.uid));
+                                if (userDoc.exists() && userDoc.data().role === "ADMIN") {
+                                    window.location.replace("admin/admin-dashboard.html");
+                                } else {
+                                    window.location.replace("dashboard.html");
+                                }
+                            } catch (e) {
+                                window.location.replace("login.html");
+                            }
+                        } else {
+                            window.location.replace("login.html");
+                        }
+                    });
+                }
+            }, 50);
+        });
+    </script>
+</body>
+</html>
