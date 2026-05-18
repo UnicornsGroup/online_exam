@@ -18,17 +18,23 @@
             </div>
         </div>
 
-        <form id="portalAuthenticationForm" class="space-y-4">
+        <form id="loginForm" class="space-y-4">
             <div>
-                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Email Address</label>
-                <input type="email" id="authEmailInputField" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
+                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Email Address / Admission No</label>
+                <input type="text" id="username" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
             </div>
             <div>
                 <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Secret Password</label>
-                <input type="password" id="authPasswordInputField" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
+                <input type="password" id="password" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
             </div>
-            <button type="submit" id="authSubmitActionButton" class="w-full text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transition-all">
-                Sign In to Account
+            
+            <div id="errorAlert" class="hidden bg-red-950/40 border border-red-900/60 p-3 rounded-xl text-xs text-red-400 font-mono">
+                <span id="errorMessage"></span>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transition-all flex items-center justify-center space-x-2">
+                <span id="btnSpinner" class="hidden animate-spin rounded-full h-4 w-4 border-2 border-t-transparent border-white"></span>
+                <span id="btnText">Sign In Securely</span>
             </button>
         </form>
     </div>
@@ -36,6 +42,15 @@
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module">
         window.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
             const ui = window.clientPortalSettings;
             
             // ⚡ Dynamic Branding Injection
@@ -45,23 +60,134 @@
                 document.getElementById('dynamicLoginTitleNode').textContent = ui.instituteName;
                 document.getElementById('dynamicLoginTaglineNode').textContent = ui.taglineText;
                 
-                const submitBtn = document.getElementById('authSubmitActionButton');
-                submitBtn.className = `w-full bg-gradient-to-r from-${ui.accentColorClass} to-${ui.hoverColorClass} text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transform transition-all active:scale-[0.99]`;
+                submitBtn.className = `w-full bg-gradient-to-r from-${ui.accentColorClass} to-${ui.hoverColorClass} text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transform transition-all active:scale-[0.99] flex items-center justify-center space-x-2`;
             }
 
-            // Form Login Logic Integration Layer
-            document.getElementById('portalAuthenticationForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('authEmailInputField').value.trim();
-                const pass = document.getElementById('authPasswordInputField').value;
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorAlert.classList.remove('hidden');
+                submitBtn.disabled = false;
+                btnText.textContent = "Sign In Securely";
+                btnSpinner.classList.add('hidden');
+            }
 
-                try {
-                    await window.signInWithEmailAndPassword(window.auth, email, pass);
-                    window.location.replace("dashboard.html");
-                } catch(err) {
-                    alert("Authentication Failure: Invalid credential vector mappings.");
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                errorAlert.classList.add('hidden');
+                submitBtn.disabled = true;
+                btnText.textContent = "Authenticating...";
+                btnSpinner.classList.remove('hidden');
+
+                // FORCE UPPERCASE AND REMOVE SPACES
+                const rawUsername = usernameInput.value.trim().toUpperCase();
+                const password = passwordInput.value.trim();
+
+                if (!rawUsername || !password) {
+                    showError("Please enter both admission number and password.");
+                    return;
                 }
+
+                // ⚡ DYNAMIC SUFFIX RESOLUTION: Pull domain directly out of client-settings.js
+                const targetSuffix = (ui && ui.emailDomainSuffix) ? ui.emailDomainSuffix : "portal.com";
+                const derivedEmail = `${rawUsername}@${targetSuffix}`;
+
+                const executeLogin = setInterval(async () => {
+                    if (window.auth && window.signInWithEmailAndPassword) {
+                        clearInterval(executeLogin);
+
+                        try {
+                            // Try to log in assuming the Auth profile already exists
+                            const userCredential = await window.signInWithEmailAndPassword(window.auth, derivedEmail, password);
+                            await routeAuthenticatedUser(userCredential.user.uid);
+                        } catch (error) {
+                            console.log("Initial Auth Failure Code:", error.code);
+                            // Catch invalid credentials and check if it's an unprovisioned CSV record
+                            if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+                                await attemptLazyAuthenticationProvisioning(rawUsername, derivedEmail, password);
+                            } else if (error.code === "auth/network-request-failed") {
+                                showError("Network connection fault. Check your internet access.");
+                            } else {
+                                showError("Invalid admission number or password validation error.");
+                            }
+                        }
+                    }
+                }, 50);
             });
+
+            async function attemptLazyAuthenticationProvisioning(username, email, password) {
+                try {
+                    // Check both standard document ID and _UID format to be safe
+                    const fallbackDocId = username + "_UID";
+                    
+                    let userDocRef = window.doc(window.db, "users", fallbackDocId);
+                    let userDocSnapshot = await window.getDoc(userDocRef);
+
+                    // If not found with _UID, try checking raw username string doc ID
+                    if (!userDocSnapshot.exists()) {
+                        userDocRef = window.doc(window.db, "users", username);
+                        userDocSnapshot = await window.getDoc(userDocRef);
+                    }
+
+                    if (userDocSnapshot.exists()) {
+                        const userData = userDocSnapshot.data();
+
+                        // Validation Rule: For first time login, password must match username string perfectly
+                        if (password.toUpperCase() === username) {
+                            btnText.textContent = "Creating Safe Connection...";
+                            
+                            // 1. Create account inside Firebase Authentication tab dynamically
+                            const newAuthCredential = await window.createUserWithEmailAndPassword(window.auth, email, password);
+                            
+                            // 2. Clone CSV profile configurations into the newly generated Auth UID reference document
+                            await window.setDoc(window.doc(window.db, "users", newAuthCredential.user.uid), {
+                                admissionNumber: userData.admissionNumber.trim().toUpperCase(),
+                                studentName: userData.studentName.trim(),
+                                standard: userData.standard.trim(),
+                                role: "STUDENT",
+                                email: email,
+                                mobileNumber: userData.mobileNumber ? userData.mobileNumber.toString().trim() : "0000000000"
+                            });
+                            
+                            // 3. Clear temporary holding structural index document safely
+                            try {
+                                await window.deleteDoc(userDocRef);
+                            } catch(clearErr) { console.log("Holding cache doc cleanup skipped."); }
+
+                            window.location.replace("dashboard.html");
+                        } else {
+                            showError("Invalid password typed for this registered admission profile.");
+                        }
+                    } else {
+                        // Check if user is already provisioned under their Auth UID but just typed a wrong password
+                        const fallbackQuery = window.query(window.collection(window.db, "users"), window.where("admissionNumber", "==", username));
+                        const fallbackSnapshot = await window.getDocs(fallbackQuery);
+                        
+                        if (!fallbackSnapshot.empty) {
+                            showError("Incorrect password. Type your absolute admission number clearly.");
+                        } else {
+                            showError("Admission Number '" + username + "' not found in the institution database.");
+                        }
+                    }
+                } catch (provisionError) {
+                    console.error("Provisioning engine pipeline error:", provisionError);
+                    showError("Authentication gate timeout issue. Try checking your login fields.");
+                }
+            }
+
+            async function routeAuthenticatedUser(uid) {
+                const userDoc = await window.getDoc(window.doc(window.db, "users", uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    if (userData.role === "ADMIN") {
+                        window.location.replace("admin/admin-dashboard.html");
+                    } else {
+                        window.location.replace("dashboard.html");
+                    }
+                } else {
+                    showError("Profile database configuration record missing for this ID.");
+                }
+            }
         });
     </script>
 </body>
