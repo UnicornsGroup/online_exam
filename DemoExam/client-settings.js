@@ -7,7 +7,7 @@ const clientPortalSettings = {
     instituteName: "DEMO APP", // The name of the institute/brand using this portal
     taglineText: "ONLINE EXAM Portal",
     brandedLogoUrl: "assets/logo/logo.png", // Path to their logo file inside this folder
-    emailDomainSuffix: "surajenglishacademy.in",
+    emailDomainSuffix: "portal.com",
     
     // 🎨 2. THEME UTILITIES (Tailwind accent class configurations)
     accentColorClass: "blue-600",
