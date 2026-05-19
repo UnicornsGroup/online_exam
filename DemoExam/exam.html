@@ -26,8 +26,19 @@
     </header>
 
     <!-- Strict Violation Warning Overlay Panel Display Banner -->
-    <div id="violationWarningToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-red-600 border border-red-500 text-white font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm animate-bounce">
-        <span>⚠️ SECURE GUARD DETECTION WARNING: Tab switch or window mutation detected! Multiple exceptions will trigger an automatic immediate submission lock.</span>
+    <div id="securityWarningStrip" class="bg-slate-950 border-b border-gray-800 text-xs py-2 px-4 shadow-inner sticky top-16 z-40 transition-all">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 font-medium">
+            <div class="flex items-center space-x-2 text-gray-400">
+                <span class="flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"></span>
+                <span>Secure Guard Protocol: Active Workspace Monitoring</span>
+            </div>
+            <div class="flex items-center space-x-2 text-sm">
+                <span class="text-gray-400 text-xs">Remaining Striking Tolerances:</span>
+                <span id="warningStrikesCounterBadge" class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-0.5 rounded-md font-extrabold font-mono tracking-wider">
+                    3 / 3 WARNINGS LEFT
+                </span>
+            </div>
+        </div>
     </div>
 
     <!-- Main Live Questionnaire Assessment Framework Workspace -->

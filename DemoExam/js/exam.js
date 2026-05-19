@@ -17,10 +17,15 @@
         }
     }, 50);
 
+    // FIXED: Maps directly to the restored HTML nodes to bind the rich text editor cleanly
     const quillRichEditorInstance = new Quill('#qTextEditor', {
         theme: 'snow',
         placeholder: 'Compose structured questions statements layout here...',
-        modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']] }
+        modules: { 
+            toolbar: {
+                container: '#editorToolbar'
+            }
+        }
     });
 
     let localQuestionStack = [];
@@ -32,7 +37,6 @@
     const publishExamBtn = document.getElementById('publishExamBtn');
     const csvFileInput = document.getElementById('csvFileInput');
     
-    // NEW FORM EDIT HOOK ELEMENTS
     const editingExamDocId = document.getElementById('editingExamDocId');
     const metaFormTitle = document.getElementById('metaFormTitle');
     const cancelExamEditBtn = document.getElementById('cancelExamEditBtn');
@@ -44,8 +48,53 @@
     const optD = document.getElementById('optD');
     const correctOpt = document.getElementById('correctOpt');
     const qMarks = document.getElementById('qMarks');
+    const examNegativeMarks = document.getElementById('examNegativeMarks');
 
-    // Load Live Inventory List directly from database collection
+    // Mapped DOM Nodes for local file handling hooks
+    const uploadQImgFile = document.getElementById('uploadQImgFile');
+    const uploadOptAImgFile = document.getElementById('uploadOptAImgFile');
+    const uploadOptBImgFile = document.getElementById('uploadOptBImgFile');
+    const uploadOptCImgFile = document.getElementById('uploadOptCImgFile');
+    const uploadOptDImgFile = document.getElementById('uploadOptDImgFile');
+
+    // Inline Compressor Engine Utility Pipeline
+    function compressImageToInlineBase64String(fileInputNode) {
+        return new Promise((resolve) => {
+            const file = fileInputNode?.files?.[0];
+            if (!file) {
+                resolve(""); 
+                return;
+            }
+
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = (event) => {
+                const imgElement = new Image();
+                imgElement.src = event.target.result;
+                imgElement.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const targetMaxWidth = 600; 
+                    let calculatedWidth = imgElement.width;
+                    let calculatedHeight = imgElement.height;
+
+                    if (calculatedWidth > targetMaxWidth) {
+                        calculatedHeight = Math.round((targetMaxWidth / calculatedWidth) * calculatedHeight);
+                        calculatedWidth = targetMaxWidth;
+                    }
+
+                    canvas.width = calculatedWidth;
+                    canvas.height = calculatedHeight;
+
+                    const context = canvas.getContext('2d');
+                    context.drawImage(imgElement, 0, 0, calculatedWidth, calculatedHeight);
+
+                    const compressedBase64Result = canvas.toDataURL('image/jpeg', 0.7);
+                    resolve(compressedBase64Result);
+                };
+            };
+        });
+    }
+
     async function loadExamsInventoryDirectory() {
         if(!window.db) return;
         try {
@@ -60,12 +109,13 @@
             snap.forEach(doc => {
                 const data = doc.data();
                 const stdListString = data.standards ? data.standards.join(', ') : data.standard;
+                const negVal = data.negativeMarks !== undefined ? data.negativeMarks : 0;
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-800/40 text-sm transition-colors";
                 tr.innerHTML = `
                     <td class="py-3.5 px-2"><span class="text-xs font-mono font-bold text-blue-400 uppercase">${data.subject}</span><div class="text-white font-bold text-base">${data.title}</div></td>
                     <td class="py-3.5 px-2 text-gray-300 font-medium">${stdListString}</td>
-                    <td class="py-3.5 px-2 font-mono text-gray-400">${data.duration} Mins</td>
+                    <td class="py-3.5 px-2 font-mono text-gray-400">${data.duration} Mins (Neg: -${negVal})</td>
                     <td class="py-3.5 px-2 font-mono text-emerald-400 font-bold">${data.totalMarks} M</td>
                     <td class="py-3.5 px-2 text-right">
                         <button class="load-exam-edit-btn bg-blue-900/50 hover:bg-blue-800 border border-blue-700/50 px-3 py-1 rounded text-xs font-bold text-blue-200" data-id="${doc.id}">Edit / Modify</button>
@@ -81,7 +131,6 @@
         } catch(err) { console.error(err); }
     }
 
-    // NEW FUNCTION: Pull existing exam parameters from database and load into form fields
     async function enterExamEditConfigurationMode(e) {
         const targetId = e.target.getAttribute('data-id');
         try {
@@ -90,24 +139,21 @@
 
             const examData = targetDocSnap.data();
             
-            // Activate structural flags values
             editingExamDocId.value = targetId;
             metaFormTitle.textContent = "Modify Assessment Profile Mode";
             publishExamBtn.textContent = "Update & Overwrite Exam Profile";
             cancelExamEditBtn.classList.remove('hidden');
-            document.getElementById('bulkImportCardContainer').classList.add('hidden'); // Hide bulk upload box during editing
+            document.getElementById('bulkImportCardContainer').classList.add('hidden');
 
-            // Populate text metrics fields
             document.getElementById('examTitle').value = examData.title;
             document.getElementById('examSubject').value = examData.subject;
             document.getElementById('examDuration').value = examData.duration;
             document.getElementById('examInstructions').value = examData.instructions;
+            if (examNegativeMarks) examNegativeMarks.value = examData.negativeMarks !== undefined ? examData.negativeMarks : 0;
             
-            // Format time inputs to ISO string standard format
             if(examData.startTime) document.getElementById('examStart').value = examData.startTime.substring(0, 16);
             if(examData.endTime) document.getElementById('examEnd').value = examData.endTime.substring(0, 16);
 
-            // Populate class allocation multi-checkbox values
             document.querySelectorAll('.std-checkbox').forEach(cb => {
                 if(examData.standards) {
                     cb.checked = examData.standards.includes(cb.value);
@@ -116,10 +162,8 @@
                 }
             });
 
-            // Restore the saved question array layout stream
             localQuestionStack = examData.questions ? [...examData.questions] : [];
             refreshPreviewMatrix();
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } catch(err) { alert("Error reading record dataset."); }
@@ -133,6 +177,19 @@
         document.getElementById('bulkImportCardContainer').classList.remove('hidden');
 
         examMetaForm.reset();
+        
+        optA.value = "";
+        optB.value = "";
+        optC.value = "";
+        optD.value = "";
+        if(uploadQImgFile) uploadQImgFile.value = "";
+        if(uploadOptAImgFile) uploadOptAImgFile.value = "";
+        if(uploadOptBImgFile) uploadOptBImgFile.value = "";
+        if(uploadOptCImgFile) uploadOptCImgFile.value = "";
+        if(uploadOptDImgFile) uploadOptDImgFile.value = "";
+        quillRichEditorInstance.setText('');
+
+        if(examNegativeMarks) examNegativeMarks.value = 0;
         document.querySelectorAll('.std-checkbox').forEach(cb => cb.checked = false);
         localQuestionStack = [];
         refreshPreviewMatrix();
@@ -158,21 +215,23 @@
                     localQuestionStack.push({
                         id: "Q_" + Date.now() + "_" + Math.floor(Math.random() * 10000) + "_" + i,
                         text: columns[0].trim(),
+                        qImgData: "", 
                         options: { A: columns[1].trim(), B: columns[2].trim(), C: columns[3].trim(), D: columns[4].trim() },
+                        optImagesData: { A: "", B: "", C: "", D: "" },
                         correct: columns[5].trim().toUpperCase(),
                         marks: parseInt(columns[6].trim()) || 1
                     });
                     successfullyImportedRowsCount++;
                 }
             }
-            alert(`Bulk Upload Finished! Loaded ${successfullyImportedRowsCount} items.`);
+            alert(`Bulk Upload Finished! Loaded ${successfullyImportedRowsCount} items without images.`);
             csvFileInput.value = "";
             refreshPreviewMatrix();
         };
         reader.readAsText(file);
     });
 
-    questionForm.addEventListener('submit', (e) => {
+    questionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const richHTMLQuestionTextContent = quillRichEditorInstance.getSemanticHTML().trim();
         if (quillRichEditorInstance.getText().trim().length === 0) {
@@ -180,15 +239,39 @@
             return;
         }
 
+        const submitBtn = questionForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Compressing Assets...";
+
+        const base64QImg = await compressImageToInlineBase64String(uploadQImgFile);
+        const base64OptA = await compressImageToInlineBase64String(uploadOptAImgFile);
+        const base64OptB = await compressImageToInlineBase64String(uploadOptBImgFile);
+        const base64OptC = await compressImageToInlineBase64String(uploadOptCImgFile);
+        const base64OptD = await compressImageToInlineBase64String(uploadOptDImgFile);
+
         localQuestionStack.push({
             id: "Q_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
             text: richHTMLQuestionTextContent,
+            qImgData: base64QImg, 
             options: { A: optA.value.trim(), B: optB.value.trim(), C: optC.value.trim(), D: optD.value.trim() },
+            optImagesData: { A: base64OptA, B: base64OptB, C: base64OptC, D: base64OptD }, 
             correct: correctOpt.value,
             marks: parseInt(qMarks.value) || 1
         });
-        questionForm.reset();
+
+        optA.value = "";
+        optB.value = "";
+        optC.value = "";
+        optD.value = "";
+        if(uploadQImgFile) uploadQImgFile.value = "";
+        if(uploadOptAImgFile) uploadOptAImgFile.value = "";
+        if(uploadOptBImgFile) uploadOptBImgFile.value = "";
+        if(uploadOptCImgFile) uploadOptCImgFile.value = "";
+        if(uploadOptDImgFile) uploadOptDImgFile.value = "";
         quillRichEditorInstance.setText('');
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Queue Question Item";
         refreshPreviewMatrix();
     });
 
@@ -202,17 +285,23 @@
         questionsPreviewList.innerHTML = "";
         localQuestionStack.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = "py-4 first:pt-0 text-sm space-y-1.5";
+            div.className = "py-4 first:pt-0 text-sm space-y-2";
+            
+            const qThumbHTML = item.qImgData ? `<div class="mt-1"><img src="${item.qImgData}" class="h-12 w-auto border border-gray-600 rounded bg-gray-900 object-contain"></div>` : "";
+
             div.innerHTML = `
                 <div class="flex items-start justify-between">
-                    <span class="font-semibold text-white">Q${index + 1}: <div class="inline-block border-l border-gray-700 pl-1 text-gray-200">${item.text}</div> <span class="text-blue-400 ml-1">(${item.marks} M)</span></span>
+                    <div class="space-y-1">
+                        <span class="font-semibold text-white">Q${index + 1}: <div class="inline-block border-l border-gray-700 pl-1 text-gray-200">${item.text}</div> <span class="text-blue-400 ml-1">(${item.marks} M)</span></span>
+                        ${qThumbHTML}
+                    </div>
                     <button class="remove-stack-btn text-red-400 hover:text-red-500 font-medium text-xs bg-red-950/40 px-2 py-0.5 rounded border border-red-900/50" data-idx="${index}">Remove</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs text-gray-400 font-mono pl-2">
-                    <div class="${item.correct==='A'?'text-green-400 font-bold':''}">A: ${item.options.A}</div>
-                    <div class="${item.correct==='B'?'text-green-400 font-bold':''}">B: ${item.options.B}</div>
-                    <div class="${item.correct==='C'?'text-green-400 font-bold':''}">C: ${item.options.C}</div>
-                    <div class="${item.correct==='D'?'text-green-400 font-bold':''}">D: ${item.options.D}</div>
+                    <div class="${item.correct==='A'?'text-green-400 font-bold':''}">A: ${item.options.A} ${item.optImagesData?.A ? '📷':''}</div>
+                    <div class="${item.correct==='B'?'text-green-400 font-bold':''}">B: ${item.options.B} ${item.optImagesData?.B ? '📷':''}</div>
+                    <div class="${item.correct==='C'?'text-green-400 font-bold':''}">C: ${item.options.C} ${item.optImagesData?.C ? '📷':''}</div>
+                    <div class="${item.correct==='D'?'text-green-400 font-bold':''}">D: ${item.options.D} ${item.optImagesData?.D ? '📷':''}</div>
                 </div>
             `;
             questionsPreviewList.appendChild(div);
@@ -249,7 +338,7 @@
 
         publishExamBtn.disabled = true;
         const totalCalculatedMarks = localQuestionStack.reduce((acc, obj) => acc + obj.marks, 0);
-        const activeDocId = editingExamDocId.value; // Fetch current mode state string
+        const activeDocId = editingExamDocId.value;
 
         const examPayloadSchema = {
             title: document.getElementById('examTitle').value.trim(),
@@ -257,6 +346,7 @@
             standard: targetStandardsArray[0],
             subject: document.getElementById('examSubject').value.trim(),
             duration: parseInt(document.getElementById('examDuration').value) || 15,
+            negativeMarks: parseFloat(examNegativeMarks.value) || 0,
             startTime: new Date(document.getElementById('examStart').value).toISOString(),
             endTime: new Date(document.getElementById('examEnd').value).toISOString(),
             instructions: document.getElementById('examInstructions').value.trim(),
@@ -267,11 +357,9 @@
 
         try {
             if(activeDocId) {
-                // UPDATE CURRENT EXAM MODE VIA FIRESTORE
-                await window.updateDoc(window.doc(window.db, "exams", activeDocId), examPayloadSchema);
+                await window.updateDoc(window.doc(window.doc(window.db, "exams", activeDocId)), examPayloadSchema);
                 alert("Success! The existing examination profile has been updated live inside the database.");
             } else {
-                // CREATE FRESH EXAM MODE
                 examPayloadSchema.createdAt = new Date().toISOString();
                 await window.addDoc(window.collection(window.db, "exams"), examPayloadSchema);
                 alert("Success! A new examination schema has been successfully compiled and published.");
