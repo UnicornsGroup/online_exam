@@ -3,10 +3,10 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, creat
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDM_yvNHBECUxAyjf0Q8c0OiJtfJFJS3ek",
-  authDomain: "onlineexam-4c87c.firebaseapp.com",
-  projectId: "onlineexam-4c87c",
-  appId: "1:911623761586:web:2795cb6637145123d9e3ab"
+  apiKey: "AIzaSyCmh1IgoP5OJaILVIEu98vHRDIDWM1ltMA",
+  authDomain: "demoexam-e6780.firebaseapp.com",
+  projectId: "demoexam-e6780",
+  appId: "1:504643921191:web:045ca36481aa7c622cb502"
 };
 
 const app = initializeApp(firebaseConfig);
