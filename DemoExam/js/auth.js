@@ -33,7 +33,7 @@
             return;
         }
 
-        const derivedEmail = `${rawUsername}@surajenglishacademy.in`;
+        const derivedEmail = `${rawUsername}@portal.com`;
 
         const executeLogin = setInterval(async () => {
             if (window.auth && window.signInWithEmailAndPassword) {

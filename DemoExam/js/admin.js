@@ -57,7 +57,7 @@
                     const studentName = columns[1].trim();
                     const standard = columns[2].trim();
                     const mobileNumber = columns[3].trim();
-                    const email = `${admissionNumber}@surajenglishacademy.in`;
+                    const email = `${admissionNumber}@portal.com`;
                     const fallbackDocId = admissionNumber + "_UID";
 
                     try {
@@ -151,7 +151,7 @@
         const studentName = studNameInput.value.trim();
         const standard = studStdSelect.value;
         const mobileNumber = studMobInput.value.trim();
-        const email = `${admissionNumber}@surajenglishacademy.in`;
+        const email = `${admissionNumber}@portal.com`;
 
         try {
             if(docId) {
