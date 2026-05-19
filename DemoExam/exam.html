@@ -3,564 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Examination Workspace</title>
+    <title>Live Assessment Terminal - Secure Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <style>
-        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-        .matrix-scroll::-webkit-scrollbar { width: 4px; }
-        .matrix-scroll::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 2px; }
-        .math-container chtml { font-size: 110% !important; }
-    </style>
-    <script src="client-settings.js"></script>
+    <link rel="stylesheet" href="css/custom.css">
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen font-sans select-none overflow-x-hidden">
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans no-select">
 
-    <div id="systemInitializationVerificationShieldOverlay" class="fixed inset-0 bg-gray-950 z-[100] flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-lg w-full text-center space-y-6 shadow-2xl">
-            <div class="bg-blue-950/50 border border-blue-900/60 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
-                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </div>
-            <div class="space-y-2">
-                <h2 id="modalInitializationInstituteTitleDisplay" class="text-xl font-black text-white uppercase tracking-tight">Initializing Platform Layer...</h2>
-                <p class="text-sm text-gray-400 leading-relaxed">This examination requires active camera calibration, device verification permissions, and absolute fullscreen kiosk enforcement.</p>
-            </div>
-            <div class="bg-gray-950/60 border border-gray-800 p-4 rounded-xl text-left space-y-2.5">
-                <div class="flex items-center space-x-2.5 text-xs font-mono text-gray-400">
-                    <span id="cameraVerificationStatusNode" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Proctoring Module: Awaiting Webcam Activation Approval</span>
-                </div>
-                <div class="flex items-center space-x-2.5 text-xs font-mono text-gray-400">
-                    <span class="w-2 h-2 rounded-full bg-gray-600"></span>
-                    <span>Kiosk Security: Fullscreen Environment Lock Activated</span>
-                </div>
-            </div>
-            <button type="button" id="grantHardwarePermissionsAndLaunchBtn" class="w-full text-white font-extrabold py-4 rounded-xl shadow-lg transform transition-all active:scale-[0.99] tracking-wide uppercase text-sm">
-                Authorize Environment & Start Test
-            </button>
-        </div>
-    </div>
-
-    <div id="activeSecurityViolationInterceptionWarningPrompt" class="fixed inset-0 bg-gray-950/90 backdrop-blur-sm z-[90] hidden items-center justify-center p-4">
-        <div class="bg-red-950/40 border-2 border-red-900/80 p-8 rounded-2xl max-w-md w-full text-center space-y-5 shadow-2xl">
-            <div class="w-14 h-14 bg-red-950 border border-red-800 rounded-full flex items-center justify-center mx-auto text-red-500 font-black text-2xl animate-bounce">⚠️</div>
-            <div class="space-y-1.5">
-                <h3 class="text-lg font-black text-white uppercase">Security Violation Intercepted!</h3>
-                <p class="text-sm text-red-300/90 leading-relaxed">System tracking detected window blurring, shortcut inputs, or device focus shifting parameters.</p>
-            </div>
-            <div class="bg-gray-950/80 border border-red-900 p-3 rounded-xl font-mono text-xs text-red-400">
-                Active System Infractions Counter: <span id="violationCountDisplayCounterNode" class="font-bold text-base text-red-500">0</span> / 3 Warnings
-            </div>
-            <button type="button" id="dismissSecurityWarningAndResumeTestSessionBtn" class="w-full bg-red-900 hover:bg-red-800 text-white font-bold py-3 rounded-lg text-xs uppercase tracking-wider transition-colors">
-                Acknowledge & Re-Enter Kiosk Mode
-            </button>
-        </div>
-    </div>
-
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 px-4 py-3 shadow-md">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Top Sticky Heads-Up Display Header Bar -->
+    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="dynamicBrandedLogoImageTagSlot" src="" alt="Logo" class="h-8 w-auto object-contain">
-                <h1 id="liveHeaderExamTitleDisplayNode" class="font-black text-xs sm:text-sm tracking-tight text-white uppercase">Loading Parameters...</h1>
+                <img src="assets/logo/logo.png" alt="Logo" class="h-9 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+                <span id="examHeaderTitle" class="font-bold text-sm sm:text-base text-white tracking-wide truncate max-w-[180px] sm:max-w-xs">Loading Assessment...</span>
             </div>
-            <video id="hiddenSecurityPassiveCameraStreamNode" autoplay playsinline class="hidden w-1 h-1 opacity-0"></video>
-            <div class="flex items-center space-x-4">
-                <div class="hidden md:block bg-gray-950/80 border border-gray-800 px-3 py-1 rounded-lg font-mono text-[11px] text-gray-400">
-                    Secure ID: <span id="oneDeviceSessionVerificationTokenDisplay" class="text-blue-400 font-bold">---</span>
-                </div>
-                <div class="bg-red-950/60 border border-red-900 px-4 py-1.5 rounded-xl text-right shadow-inner min-w-[110px]">
-                    <span class="text-[9px] text-red-400 font-bold block uppercase tracking-wider leading-none mb-0.5">Time Remaining</span>
-                    <span id="countdownTimerClockDisplay" class="text-lg sm:text-xl font-black font-mono text-red-500 leading-none">00:00</span>
-                </div>
+            
+            <!-- Floating Live Countdown Badge Counter -->
+            <div class="flex items-center space-x-3 bg-red-950/80 px-4 py-2 rounded-lg border border-red-700/50">
+                <span class="text-red-400 text-xs font-bold tracking-wider uppercase animate-pulse hidden sm:inline">Time Remaining:</span>
+                <span id="countdownTimerClock" class="text-red-200 font-mono font-extrabold text-base sm:text-lg tracking-widest">00:00</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section class="lg:col-span-3 space-y-4">
-            <div id="singleActiveQuestionRenderSlotNode" class="bg-gray-900 p-6 sm:p-8 rounded-2xl border border-gray-800 shadow-xl min-h-[420px] flex flex-col justify-between">
-                <div class="text-center py-32 text-gray-500 font-mono text-xs">Awaiting client parameters validation sequences...</div>
-            </div>
-        </section>
+    <!-- Strict Violation Warning Overlay Panel Display Banner -->
+    <div id="violationWarningToast" class="hidden fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-red-600 border border-red-500 text-white font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm animate-bounce">
+        <span>⚠️ SECURE GUARD DETECTION WARNING: Tab switch or window mutation detected! Multiple exceptions will trigger an automatic immediate submission lock.</span>
+    </div>
 
-        <section class="bg-gray-900 rounded-2xl border border-gray-800 p-5 shadow-xl flex flex-col justify-between h-fit max-h-[620px] lg:sticky lg:top-24">
-            <div class="space-y-4 overflow-hidden flex flex-col">
-                <div class="border-b border-gray-800 pb-2 flex justify-between items-center">
-                    <h4 class="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider">Question Matrix</h4>
-                    <span id="completionTrackerFractionBadge" class="bg-gray-950 px-2 py-0.5 border border-gray-800 rounded font-mono text-[10px] text-blue-400 font-bold">0/0</span>
-                </div>
-                <div id="navigationMatrixSquaresGridWrapperNode" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-5 gap-2 overflow-y-auto matrix-scroll pr-1 max-h-[340px]"></div>
+    <!-- Main Live Questionnaire Assessment Framework Workspace -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Structural Initialization Screen (Instructions Modal Stage) -->
+        <div id="instructionsGateBlock" class="bg-gray-800 rounded-2xl p-6 sm:p-8 border border-gray-700 shadow-2xl space-y-6">
+            <div class="border-b border-gray-700 pb-4">
+                <h2 id="instExamTitle" class="text-2xl font-black text-white">Assessment Operational Standard Instructions</h2>
+                <p class="text-xs text-blue-400 mt-1 font-mono uppercase tracking-wide">Verification parameters parsed successfully</p>
+            </div>
+            
+            <div class="text-sm text-gray-300 space-y-3 bg-gray-900/40 p-5 rounded-xl border border-gray-700/60 font-medium">
+                <p id="instExamDetails" class="text-gray-400">Loading parameter matrices...</p>
+                <p class="text-amber-400 font-bold">CRITICAL SECURITY CLAUSES BEFORE INITIALIZATION:</p>
+                <ul class="list-disc list-inside space-y-1 text-xs text-gray-400 pl-2">
+                    <li>Exiting the active viewport window profile will instantly register a cheating system exception log.</li>
+                    <li>Do not perform refresh steps; doing so WILL NOT restore elapsed execution minutes or reset item arrangements.</li>
+                    <li>When the monitor clock tracking countdown variable returns null (00:00), compilation payloads execute automatically.</li>
+                </ul>
             </div>
 
-            <div class="border-t border-gray-800 pt-4 mt-4 space-y-3">
-                <div class="grid grid-cols-3 gap-1.5 text-[9px] font-mono text-center">
-                    <div class="flex flex-col items-center p-1 bg-gray-950 border border-gray-800 rounded-md">
-                        <span class="w-3 h-3 bg-white border border-gray-300 rounded-sm mb-1"></span>
-                        <span class="text-gray-400">Not Seen</span>
-                    </div>
-                    <div class="flex flex-col items-center p-1 bg-gray-950 border border-gray-800 rounded-md">
-                        <span class="w-3 h-3 bg-yellow-500 rounded-sm mb-1"></span>
-                        <span class="text-gray-400">Skipped</span>
-                    </div>
-                    <div class="flex flex-col items-center p-1 bg-gray-950 border border-gray-800 rounded-md">
-                        <span class="w-3 h-3 bg-green-600 rounded-sm mb-1"></span>
-                        <span class="text-gray-400">Attempted</span>
-                    </div>
-                </div>
-                <button type="button" id="emergencyManualTerminationTriggerBtn" class="w-full bg-red-950/40 hover:bg-red-950 border border-red-900/60 hover:border-red-900 text-red-400 font-bold py-2 rounded-lg transition-colors uppercase text-[9px] tracking-wider">
-                    Force Submit Examination
+            <button type="button" id="initializeExamBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-base py-3.5 rounded-xl shadow-lg transition-all transform active:scale-95 text-center">
+                Accept Protocols & Initialize Assessment
+            </button>
+        </div>
+
+        <!-- Live MCQ Questionnaire Operational Arena Workspace Canvas -->
+        <form id="liveExamForm" class="hidden space-y-6">
+            <!-- Questions Rendering Loop Targeted Element Hook Node -->
+            <div id="questionnaireRenderOutlet" class="space-y-6">
+                <!-- Javascript will inject randomized data nodes directly here -->
+            </div>
+
+            <!-- Terminal Final Action Complete Submit Dispatch Block -->
+            <div class="pt-6 border-t border-gray-800 flex justify-end">
+                <button type="submit" id="manualSubmitBtn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-base px-10 py-4 rounded-xl shadow-xl tracking-wide transition-all transform active:scale-95">
+                    Finalize & Submit Examination
                 </button>
             </div>
-        </section>
+        </form>
     </main>
 
+    <!-- Fundamental Dependencies Stack -->
     <script type="module" src="js/firebase-config.js"></script>
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            let activeUserMetadata = null;
-            let targetExamConfigurationMap = null;
-            let currentTimerInstanceClockRef = null;
-
-            let masterOriginalQuestionsCollectionArray = [];
-            let uniqueShuffledQuestionsExecutionArray = [];
-            
-            let systemCurrentPageIndexTracker = 0;
-            let totalAvailableCountdownSecondsCounter = 0;
-            
-            let activeTestingEnvironmentValidationFlag = false;
-            let platformSecurityViolationsAccumulator = 0;
-            
-            let cachedUserAnswersSessionMapObject = {};
-            let visitedQuestionsIndexTrackingMap = {}; 
-
-            const urlQueryExtractionEngine = new URLSearchParams(window.location.search);
-            const routeExamDocumentIdentifier = urlQueryExtractionEngine.get('id');
-
-            // ⚡ COMPILATION PHASE: Read branding directly from the 1-File Config array row keys
-            const ui = window.clientPortalSettings;
-            if (ui) {
-                document.title = `${ui.instituteName} - Secure Exam Portal`;
-                document.getElementById('modalInitializationInstituteTitleDisplay').textContent = ui.instituteName;
-                document.getElementById('dynamicBrandedLogoImageTagSlot').src = ui.brandedLogoUrl;
-                
-                // Set dynamic button theme styling classes straight from file variables
-                const launchBtn = document.getElementById('grantHardwarePermissionsAndLaunchBtn');
-                launchBtn.className = `w-full bg-gradient-to-r from-${ui.accentColorClass} to-${ui.hoverColorClass} text-white font-extrabold py-4 rounded-xl shadow-lg transform transition-all active:scale-[0.99] tracking-wide uppercase text-sm`;
-            }
-
-            if(!routeExamDocumentIdentifier) {
-                window.location.replace("dashboard.html");
-                return;
-            }
-
-            const coreFrameworkDependencyCheckEngine = setInterval(() => {
-                if (window.auth && window.onAuthStateChanged) {
-                    clearInterval(coreFrameworkDependencyCheckEngine);
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            const userRecordRef = await window.getDoc(window.doc(window.db, "users", user.uid));
-                            if (userRecordRef.exists()) {
-                                activeUserMetadata = userRecordRef.data();
-                                executeOneDeviceVerificationProtocol(user.uid);
-                            } else { window.location.replace("login.html"); }
-                        } else { window.location.replace("login.html"); }
-                    });
-                }
-            }, 50);
-
-            async function executeOneDeviceVerificationProtocol(userUidString) {
-                const liveGeneratedDeviceSessionToken = "STU_TOK_" + Math.random().toString(36).substring(2, 11).toUpperCase() + "_" + new Date().getTime();
-                document.getElementById('oneDeviceSessionVerificationTokenDisplay').textContent = liveGeneratedDeviceSessionToken.substring(8,18);
-
-                const userDocRef = window.doc(window.db, "users", userUidString);
-                await window.updateDoc(userDocRef, { activeSessionToken: liveGeneratedDeviceSessionToken });
-
-                window.onSnapshot(userDocRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        const cloudUserData = snapshot.data();
-                        if (cloudUserData.activeSessionToken !== liveGeneratedDeviceSessionToken && activeTestingEnvironmentValidationFlag) {
-                            activeTestingEnvironmentValidationFlag = false;
-                            alert("Session Mismatch Error: Multiple terminal vectors detected utilizing this profile structure concurrently.");
-                            executeHardwiredScorecardAutoSubmission(true);
-                        }
-                    }
-                });
-
-                fetchTargetExamConfigurationPayloadFromCloud();
-            }
-
-            async function fetchTargetExamConfigurationPayloadFromCloud() {
-                try {
-                    const validationHistoryQuery = window.query(
-                        window.collection(window.db, "results"),
-                        window.where("examId", "==", routeExamDocumentIdentifier),
-                        window.where("admissionNumber", "==", activeUserMetadata.admissionNumber)
-                    );
-                    const validationCheckSnapshot = await window.getDocs(validationHistoryQuery);
-                    if(!validationCheckSnapshot.empty) {
-                        alert("Access Lockout: Scorecards linked with these parameters are already registered on the database.");
-                        window.location.replace("dashboard.html");
-                        return;
-                    }
-
-                    const primaryExamDocRef = await window.getDoc(window.doc(window.db, "exams", routeExamDocumentIdentifier));
-                    if(!primaryExamDocRef.exists()) {
-                        window.location.replace("dashboard.html");
-                        return;
-                    }
-
-                    targetExamConfigurationMap = primaryExamDocRef.data();
-                    masterOriginalQuestionsCollectionArray = targetExamConfigurationMap.questions || [];
-                    
-                    if(masterOriginalQuestionsCollectionArray.length === 0) {
-                        alert("Data Error: Structural question lists contain clean empty datasets.");
-                        window.location.replace("dashboard.html");
-                        return;
-                    }
-
-                    uniqueShuffledQuestionsExecutionArray = shuffleArray([...masterOriginalQuestionsCollectionArray]);
-                    
-                    const localCacheKey = `local_exam_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`;
-                    const localVisitKey = `local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`;
-                    
-                    const extractedCacheDataString = localStorage.getItem(localCacheKey);
-                    if (extractedCacheDataString) { cachedUserAnswersSessionMapObject = JSON.parse(extractedCacheDataString); }
-                    
-                    const extractedVisitDataString = localStorage.getItem(localVisitKey);
-                    if (extractedVisitDataString) { visitedQuestionsIndexTrackingMap = JSON.parse(extractedVisitDataString); }
-
-                    document.getElementById('grantHardwarePermissionsAndLaunchBtn').addEventListener('click', initializeEnvironmentLockSequence);
-
-                } catch (err) { console.error("Configuration payload pull failure: ", err); }
-            }
-
-            function shuffleArray(arrayInput) {
-                let currentIterationIndex = arrayInput.length, randomSwapPositionIndex;
-                while (currentIterationIndex !== 0) {
-                    randomSwapPositionIndex = Math.floor(Math.random() * currentIterationIndex);
-                    currentIterationIndex--;
-                    [arrayInput[currentIterationIndex], arrayInput[randomSwapPositionIndex]] = [arrayInput[randomSwapPositionIndex], arrayInput[currentIterationIndex]];
-                }
-                return arrayInput;
-            }
-
-            async function initializeEnvironmentLockSequence() {
-                const statusMarkerDotNode = document.getElementById('cameraVerificationStatusNode');
-                try {
-                    const videoCaptureHardwareStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    const hardwareVideoPlayerNode = document.getElementById('hiddenSecurityPassiveCameraStreamNode');
-                    hardwareVideoPlayerNode.srcObject = videoCaptureHardwareStream;
-                    statusMarkerDotNode.className = "w-2 h-2 rounded-full bg-green-500";
-                } catch (err) {
-                    alert("Hardware Block Error: Active webcamera capture streaming is required to validate testing compliance.");
-                    return;
-                }
-
-                const masterViewportDOMElement = document.documentElement;
-                if (masterViewportDOMElement.requestFullscreen) { masterViewportDOMElement.requestFullscreen(); }
-                else if (masterViewportDOMElement.webkitRequestFullscreen) { masterViewportDOMElement.webkitRequestFullscreen(); }
-
-                document.getElementById('systemInitializationVerificationShieldOverlay').remove();
-                document.getElementById('liveHeaderExamTitleDisplayNode').textContent = `${targetExamConfigurationMap.subject} : ${targetExamConfigurationMap.title}`;
-                
-                // 🗲 CRITICAL REPAIR FLOW FIX: Changed data key reference token mapping to target 'durationMinutes' from database
-                totalAvailableCountdownSecondsCounter = parseInt(targetExamConfigurationMap.durationMinutes || targetExamConfigurationMap.duration || 30) * 60;
-                visitedQuestionsIndexTrackingMap[systemCurrentPageIndexTracker] = true;
-                localStorage.setItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(visitedQuestionsIndexTrackingMap));
-
-                buildNavigationMatrixIndicesUI();
-                renderTargetPageIndexQuestionView();
-                initializeActiveCountdownTimerThread();
-                
-                activeTestingEnvironmentValidationFlag = true;
-            }
-
-            function buildNavigationMatrixIndicesUI() {
-                const matrixHostWrapperNode = document.getElementById('navigationMatrixSquaresGridWrapperNode');
-                matrixHostWrapperNode.innerHTML = "";
-
-                uniqueShuffledQuestionsExecutionArray.forEach((_, idx) => {
-                    const indexBoxButtonElement = document.createElement('button');
-                    indexBoxButtonElement.type = "button";
-                    indexBoxButtonElement.id = `matrix_idx_box_btn_${idx}`;
-                    indexBoxButtonElement.textContent = idx + 1;
-                    
-                    indexBoxButtonElement.addEventListener('click', () => {
-                        if(activeTestingEnvironmentValidationFlag) {
-                            systemCurrentPageIndexTracker = idx;
-                            visitedQuestionsIndexTrackingMap[systemCurrentPageIndexTracker] = true;
-                            localStorage.setItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(visitedQuestionsIndexTrackingMap));
-                            renderTargetPageIndexQuestionView();
-                        }
-                    });
-                    matrixHostWrapperNode.appendChild(indexBoxButtonElement);
-                });
-                refreshMatrixUIStateIndicators();
-            }
-
-            function refreshMatrixUIStateIndicators() {
-                let metricsAnsweredCounter = 0;
-                uniqueShuffledQuestionsExecutionArray.forEach((_, idx) => {
-                    const targetBoxDOMNode = document.getElementById(`matrix_idx_box_btn_${idx}`);
-                    if(!targetBoxDOMNode) return;
-
-                    if (idx === systemCurrentPageIndexTracker) {
-                        targetBoxDOMNode.className = `bg-gray-900 border-2 border-${window.clientPortalSettings.accentColorClass} text-white font-mono font-bold text-xs py-2 rounded-lg text-center shadow-md scale-[1.03] z-10 animate-pulse`;
-                    } else if (cachedUserAnswersSessionMapObject[idx] !== undefined) {
-                        targetBoxDOMNode.className = "bg-green-600 border border-green-700 text-white font-mono font-bold text-xs py-2.5 rounded-lg text-center shadow-inner";
-                        metricsAnsweredCounter++;
-                    } else if (visitedQuestionsIndexTrackingMap[idx] === true) {
-                        targetBoxDOMNode.className = "bg-yellow-500 border border-yellow-600 text-gray-950 font-mono font-bold text-xs py-2.5 rounded-lg text-center shadow-md";
-                    } else {
-                        targetBoxDOMNode.className = "bg-white border border-gray-200 text-gray-900 font-mono font-bold text-xs py-2.5 rounded-lg text-center transition-all hover:bg-gray-100 shadow-sm";
-                    }
-                });
-                document.getElementById('completionTrackerFractionBadge').textContent = `${metricsAnsweredCounter}/${uniqueShuffledQuestionsExecutionArray.length}`;
-            }
-
-            function renderTargetPageIndexQuestionView() {
-                const renderingCanvasSlotNode = document.getElementById('singleActiveQuestionRenderSlotNode');
-                const targetQuestionDataMap = uniqueShuffledQuestionsExecutionArray[systemCurrentPageIndexTracker];
-
-                let questionDiagramAttachmentHtml = "";
-                if (targetQuestionDataMap.questionImg && targetQuestionDataMap.questionImg.trim() !== "") {
-                    let dynamicSanitizedSourceUrl = targetQuestionDataMap.questionImg;
-                    if(dynamicSanitizedSourceUrl.includes("drive.google.com")) {
-                        const matchIdPattern = dynamicSanitizedSourceUrl.match(/\/d\/([^\/]+)/);
-                        if(matchIdPattern && matchIdPattern[1]) { dynamicSanitizedSourceUrl = `https://drive.google.com/uc?export=view&id=${matchIdPattern[1]}`; }
-                    }
-                    questionDiagramAttachmentHtml = `
-                        <div class="my-4 max-w-full flex justify-start">
-                            <img src="${dynamicSanitizedSourceUrl}" alt="NEET Schema Diagram Vector" class="max-h-60 w-auto rounded-xl border border-gray-800 bg-white p-1.5 object-contain shadow-lg">
-                        </div>
-                    `;
-                }
-
-                renderingCanvasSlotNode.innerHTML = `
-                    <div class="space-y-5 math-container">
-                        <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                            <span class="text-xs font-mono font-bold tracking-widest text-${window.clientPortalSettings.accentColorClass} uppercase">Question Slot Structure ${systemCurrentPageIndexTracker + 1} of ${uniqueShuffledQuestionsExecutionArray.length}</span>
-                            <span class="bg-blue-950/40 text-blue-400 border border-blue-900/50 font-mono font-bold text-xs px-3 py-1 rounded-lg">${targetQuestionDataMap.marks || 4} Marks</span>
-                        </div>
-                        <div class="text-base sm:text-lg font-bold text-gray-100 leading-relaxed tracking-tight select-text">${targetQuestionDataMap.text || targetQuestionDataMap.questionText}</div>
-                        ${questionDiagramAttachmentHtml}
-                        <div class="grid grid-cols-1 gap-3 pt-2">
-                            ${['A', 'B', 'C', 'D'].map(optionKey => {
-                                const optionTextValue = targetQuestionDataMap[`option${optionKey}`] || (targetQuestionDataMap.options ? targetQuestionDataMap.options[optionKey] : "");
-                                if(!optionTextValue) return "";
-                                const activeSelectionStateFlag = cachedUserAnswersSessionMapObject[systemCurrentPageIndexTracker] === optionKey ? "checked" : "";
-                                return `
-                                    <label class="flex items-center space-x-3.5 bg-gray-950/40 hover:bg-gray-950 p-4 rounded-xl border border-gray-800/80 cursor-pointer transition-all group shadow-inner">
-                                        <input type="radio" name="current_active_mcq_radio_input_set" value="${optionKey}" ${activeSelectionStateFlag} class="h-4 w-4 text-blue-600 bg-gray-800 border-gray-700 focus:ring-blue-500 focus:ring-offset-gray-900">
-                                        <span class="text-sm font-semibold text-gray-300 group-hover:text-gray-100 transition-colors select-text">${optionKey} : ${optionTextValue}</span>
-                                    </label>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between border-t border-gray-800 pt-5 mt-6 gap-4">
-                        <button type="button" id="footerActionPrevPageBtn" class="bg-gray-950 hover:bg-gray-800 text-gray-300 font-bold px-5 py-3 rounded-xl border border-gray-800 transition-colors text-xs uppercase tracking-wider disabled:opacity-10 disabled:cursor-not-allowed">◀ Previous</button>
-                        <button type="button" id="footerClearActiveSelectionRadioBtn" class="text-[11px] font-mono text-gray-500 hover:text-red-400 font-bold transition-colors uppercase tracking-wider px-4 py-2 border border-transparent hover:border-red-950/80 rounded-lg">Clear Selection</button>
-                        <button type="button" id="footerActionNextPageBtn" class="bg-${window.clientPortalSettings.accentColorClass} hover:bg-${window.clientPortalSettings.hoverColorClass} text-white font-extrabold px-8 py-3 rounded-xl shadow-md transition-colors text-xs uppercase tracking-widest">${systemCurrentPageIndexTracker === uniqueShuffledQuestionsExecutionArray.length - 1 ? "Submit Paper" : "Save & Next ▶"}</button>
-                    </div>
-                `;
-
-                document.getElementById('footerActionPrevPageBtn').disabled = systemCurrentPageIndexTracker === 0;
-                document.getElementById('footerActionPrevPageBtn').addEventListener('click', executeNavigationPreviousPageAction);
-                document.getElementById('footerActionNextPageBtn').addEventListener('click', executeNavigationNextOrFinalSubmitAction);
-                document.getElementById('footerClearActiveSelectionRadioBtn').addEventListener('click', clearSelectedRadioOptionValueLocalCache);
-
-                const inputRadiosCollection = document.getElementsByName('current_active_mcq_radio_input_set');
-                inputRadiosCollection.forEach(radio => {
-                    radio.addEventListener('change', (e) => {
-                        cachedUserAnswersSessionMapObject[systemCurrentPageIndexTracker] = e.target.value;
-                        localStorage.setItem(`local_exam_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(cachedUserAnswersSessionMapObject));
-                        refreshMatrixUIStateIndicators();
-                    });
-                });
-
-                if (window.MathJax && window.MathJax.typesetPromise) { window.MathJax.typesetPromise(); }
-                refreshMatrixUIStateIndicators();
-            }
-
-            function clearSelectedRadioOptionValueLocalCache() {
-                delete cachedUserAnswersSessionMapObject[systemCurrentPageIndexTracker];
-                localStorage.setItem(`local_exam_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(cachedUserAnswersSessionMapObject));
-                renderTargetPageIndexQuestionView();
-            }
-
-            function executeNavigationPreviousPageAction() {
-                if (systemCurrentPageIndexTracker > 0) {
-                    systemCurrentPageIndexTracker--;
-                    visitedQuestionsIndexTrackingMap[systemCurrentPageIndexTracker] = true;
-                    localStorage.setItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(visitedQuestionsIndexTrackingMap));
-                    renderTargetPageIndexQuestionView();
-                }
-            }
-
-            function executeNavigationNextOrFinalSubmitAction() {
-                if (systemCurrentPageIndexTracker < uniqueShuffledQuestionsExecutionArray.length - 1) {
-                    systemCurrentPageIndexTracker++;
-                    visitedQuestionsIndexTrackingMap[systemCurrentPageIndexTracker] = true;
-                    localStorage.setItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(visitedQuestionsIndexTrackingMap));
-                    renderTargetPageIndexQuestionView();
-                } else {
-                    const secondaryConfirmationCheck = confirm("Are you sure you want to finalize this exam paper? Unanswered slots will be evaluated as skipped inputs.");
-                    if(secondaryConfirmationCheck) { executeHardwiredScorecardAutoSubmission(false); }
-                }
-            }
-
-            function initializeActiveCountdownTimerThread() {
-                const timerClockNodeRef = document.getElementById('countdownTimerClockDisplay');
-                currentTimerInstanceClockRef = setInterval(() => {
-                    if (totalAvailableCountdownSecondsCounter <= 0) {
-                        clearInterval(currentTimerInstanceClockRef);
-                        executeHardwiredScorecardAutoSubmission(false); 
-                        return;
-                    }
-                    totalAvailableCountdownSecondsCounter--;
-                    const parseMinutes = Math.floor(totalAvailableCountdownSecondsCounter / 60);
-                    const parseSeconds = totalAvailableCountdownSecondsCounter % 60;
-                    timerClockNodeRef.textContent = `${String(parseMinutes).padStart(2, '0')}:${String(parseSeconds).padStart(2, '0')}`;
-                }, 1000);
-            }
-
-            async function executeHardwiredScorecardAutoSubmission(wasForcedOutDueToCheatingFlag = false) {
-                activeTestingEnvironmentValidationFlag = false;
-                clearInterval(currentTimerInstanceClockRef);
-
-                try {
-                    const activeMediaStream = document.getElementById('hiddenSecurityPassiveCameraStreamNode').srcObject;
-                    if(activeMediaStream) { activeMediaStream.getTracks().forEach(track => track.stop()); }
-                } catch(err) { console.error(err); }
-
-                document.body.innerHTML = `<div class="min-h-screen bg-gray-950 flex flex-col items-center justify-center font-mono text-xs text-gray-500 space-y-3"><div>Evaluating performance matrix indexes analytics...</div></div>`;
-
-                let overallAccumulatedMarksPointsValue = 0;
-                let aggregateTotalExamMaxWeight = 0;
-                let absoluteCorrectAnswersQuantityTracker = 0;
-                let wrongAnswersQuantityTracker = 0;
-                let unattemptedQuestionsQuantityTracker = 0;
-
-                masterOriginalQuestionsCollectionArray.forEach((originalQuestionObj, originalIdx) => {
-                    const examWeightPoints = parseInt(originalQuestionObj.marks || targetExamConfigurationMap.marksPerQuestion || 1);
-                    aggregateTotalExamMaxWeight += examWeightPoints;
-
-                    let mappedShuffledRuntimeIndex = -1;
-                    for(let i = 0; i < uniqueShuffledQuestionsExecutionArray.length; i++) {
-                        const executionText = uniqueShuffledQuestionsExecutionArray[i].text || uniqueShuffledQuestionsExecutionArray[i].questionText;
-                        const originalText = originalQuestionObj.text || originalQuestionObj.questionText;
-                        if(executionText === originalText) {
-                            mappedShuffledRuntimeIndex = i;
-                            break;
-                        }
-                    }
-
-                    const studentSelectionChoiceString = cachedUserAnswersSessionMapObject[mappedShuffledRuntimeIndex];
-
-                    if (wasForcedOutDueToCheatingFlag) {
-                        wrongAnswersQuantityTracker = 0;
-                        absoluteCorrectAnswersQuantityTracker = 0;
-                        unattemptedQuestionsQuantityTracker = masterOriginalQuestionsCollectionArray.length;
-                        overallAccumulatedMarksPointsValue = 0;
-                    } else {
-                        const trueCorrectAnswerKey = originalQuestionObj.correctAnswer || originalQuestionObj.correctAnswerKey;
-                        if (studentSelectionChoiceString === undefined) {
-                            unattemptedQuestionsQuantityTracker++;
-                        } else if (studentSelectionChoiceString === trueCorrectAnswerKey) {
-                            overallAccumulatedMarksPointsValue += examWeightPoints;
-                            absoluteCorrectAnswersQuantityTracker++;
-                        } else {
-                            wrongAnswersQuantityTracker++;
-                        }
-                    }
-                });
-
-                const finalPercentageScoreRatioValue = aggregateTotalExamMaxWeight > 0 ? Math.round((overallAccumulatedMarksPointsValue / aggregateTotalExamMaxWeight) * 100) : 0;
-                const accuracyMetricsRatioPercentage = absoluteCorrectAnswersQuantityTracker > 0 ? Math.round((absoluteCorrectAnswersQuantityTracker / (absoluteCorrectAnswersQuantityTracker + wrongAnswersQuantityTracker)) * 100) : 0;
-
-                const compilationPayloadResultDocMap = {
-                    examId: routeExamDocumentIdentifier,
-                    examTitle: targetExamConfigurationMap.title,
-                    subject: targetExamConfigurationMap.subject,
-                    admissionNumber: activeUserMetadata.admissionNumber,
-                    studentName: activeUserMetadata.studentName,
-                    standard: activeUserMetadata.standard,
-                    scoreObtained: overallAccumulatedMarksPointsValue,
-                    totalPossibleMarks: aggregateTotalExamMaxWeight,
-                    percentageScore: finalPercentageScoreRatioValue,
-                    accuracyPercentage: accuracyMetricsRatioPercentage,
-                    correctCount: absoluteCorrectAnswersQuantityTracker,
-                    wrongCount: wrongAnswersQuantityTracker,
-                    unattemptedCount: unattemptedQuestionsQuantityTracker,
-                    totalQuestions: masterOriginalQuestionsCollectionArray.length,
-                    complianceViolationForcedOutFlag: wasForcedOutDueToCheatingFlag,
-                    submittedAt: new Date().getTime()
-                };
-
-                try {
-                    await window.addDoc(window.collection(window.db, "results"), compilationPayloadResultDocMap);
-                    localStorage.removeItem(`local_exam_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`);
-                    localStorage.removeItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`);
-                    window.location.replace(`result.html?id=${routeExamDocumentIdentifier}`);
-                } catch (err) { alert("Network Connection Error: Submissions locked in cache logs."); }
-            }
-
-            function fireActiveSecurityViolationInterceptionTrigger() {
-                if (!activeTestingEnvironmentValidationFlag) return;
-                platformSecurityViolationsAccumulator++;
-                document.getElementById('violationCountDisplayCounterNode').textContent = platformSecurityViolationsAccumulator;
-
-                if (platformSecurityViolationsAccumulator >= 3) {
-                    activeTestingEnvironmentValidationFlag = false;
-                    document.getElementById('activeSecurityViolationInterceptionWarningPrompt').style.display = "none";
-                    executeHardwiredScorecardAutoSubmission(true);
-                } else {
-                    document.getElementById('activeSecurityViolationInterceptionWarningPrompt').style.display = "flex";
-                }
-            }
-
-            window.addEventListener('blur', () => {
-                if (activeTestingEnvironmentValidationFlag) { fireActiveSecurityViolationInterceptionTrigger(); }
-            });
-
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement && activeTestingEnvironmentValidationFlag) { fireActiveSecurityViolationInterceptionTrigger(); }
-            });
-            document.addEventListener('webkitfullscreenchange', () => {
-                if (!document.webkitFullscreenElement && activeTestingEnvironmentValidationFlag) { fireActiveSecurityViolationInterceptionTrigger(); }
-            });
-
-            document.getElementById('dismissSecurityWarningAndResumeTestSessionBtn').addEventListener('click', () => {
-                document.getElementById('activeSecurityViolationInterceptionWarningPrompt').style.display = "none";
-                const targetViewElementNode = document.documentElement;
-                if (targetViewElementNode.requestFullscreen) { targetViewElementNode.requestFullscreen(); }
-                else if (targetViewElementNode.webkitRequestFullscreen) { targetViewElementNode.webkitRequestFullscreen(); }
-            });
-
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('copy', e => e.preventDefault());
-            document.addEventListener('paste', e => e.preventDefault());
-
-            window.addEventListener('keydown', (e) => {
-                if (!activeTestingEnvironmentValidationFlag) return;
-                if (e.key === 'PrintScreen' || e.keyCode === 44) {
-                    e.preventDefault();
-                    fireActiveSecurityViolationInterceptionTrigger();
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.keyCode === 80)) {
-                    e.preventDefault();
-                    fireActiveSecurityViolationInterceptionTrigger();
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.keyCode === 83)) { e.preventDefault(); }
-                if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key === 'r')) { e.preventDefault(); }
-            });
-
-            document.getElementById('emergencyManualTerminationTriggerBtn').addEventListener('click', () => {
-                const globalExitCheckValidationPrompt = confirm("Warning: manual exit request. Evaluate current metrics?");
-                if(globalExitCheckValidationPrompt) { executeHardwiredScorecardAutoSubmission(false); }
-            });
-        });
-    </script>
+    <script type="module" src="js/timer.js"></script>
 </body>
 </html>

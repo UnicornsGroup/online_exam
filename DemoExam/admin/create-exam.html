@@ -15,15 +15,15 @@
         .ql-snow .ql-fill { fill: #d1d5db !important; }
         .ql-snow .ql-picker { color: #d1d5db !important; }
     </style>
-    <script src="../client-settings.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
+    <!-- Top Navigation Header Bar -->
     <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="dynamicAdminLogoNode" src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                <span id="dynamicAdminTitleNode" class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
+                <img src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+                <span class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
             </div>
             
             <button id="adminMenuToggleBtn" class="md:hidden text-gray-400 hover:text-white focus:outline-none p-2 rounded-md hover:bg-gray-700/50 transition-colors">
@@ -34,7 +34,7 @@
 
             <nav class="hidden md:flex space-x-4 text-sm">
                 <a href="admin-dashboard.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Overview</a>
-                <a href="create-exam.html" id="desktopNavActiveExamLink" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium">Exams</a>
+                <a href="create-exam.html" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium">Exams</a>
                 <a href="manage-students.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Students</a>
                 <a href="student-performance.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Analytics</a>
                 <a href="results.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Grades</a>
@@ -44,7 +44,7 @@
 
         <div id="adminDropdownDrawer" class="hidden md:hidden border-b border-gray-700 bg-gray-800 px-4 py-3 flex flex-col space-y-2 text-sm shadow-xl">
             <a href="admin-dashboard.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Overview</a>
-            <a href="create-exam.html" id="mobileNavActiveExamLink" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium text-center">Exams</a>
+            <a href="create-exam.html" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium text-center">Exams</a>
             <a href="manage-students.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Students</a>
             <a href="student-performance.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Analytics</a>
             <a href="results.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Grades</a>
@@ -59,6 +59,7 @@
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <!-- Left Form Layout Grid -->
             <div class="xl:col-span-1 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl h-fit">
                 <h2 id="metaFormTitle" class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Exam Parameters</h2>
                 <form id="examMetaForm" class="space-y-4">
@@ -99,6 +100,7 @@
                 </form>
             </div>
 
+            <!-- Right Question Elements Grid -->
             <div class="xl:col-span-2 space-y-6">
                 <div id="bulkImportCardContainer" class="bg-gradient-to-r from-slate-800 to-gray-800 p-6 rounded-xl border border-dashed border-gray-600 shadow-xl">
                     <h2 class="text-md font-bold text-blue-400 uppercase tracking-wider mb-2">⚡ Bulk Import Spreadsheet Matrix</h2>
@@ -131,7 +133,7 @@
                                 </select>
                             </div>
                             <div><label class="block text-xs font-medium text-gray-400 mb-1">Evaluation Points / Marks</label><input type="number" id="qMarks" min="1" value="1" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none"></div>
-                            <div class="flex items-end"><button type="submit" id="manualQueueQuestionItemButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm">Queue Question Item</button></div>
+                            <div class="flex items-end"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm">Queue Question Item</button></div>
                         </div>
                     </form>
                 </div>
@@ -172,373 +174,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <script type="module" src="../js/firebase-config.js"></script>
-    
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            let queuedQuestionsArray = [];
-            let runtimeQuillInstance = null;
+    <script type="module" src="../js/exam.js"></script>
+    <script>
+        // Bind responsive menu handlers directly to local nodes
+        const toggleBtn = document.getElementById('adminMenuToggleBtn');
+        const drawer = document.getElementById('adminDropdownDrawer');
+        const iconPath = document.getElementById('adminMenuIconPath');
 
-            // --- ⚡ Dynamic Branding & Accent Configurations Sheet Mapping ---
-            const config = window.clientPortalSettings;
-            if (config) {
-                document.title = `${config.instituteName} - Create & Manage Exams`;
-                document.getElementById('dynamicAdminLogoNode').src = "../" + config.brandedLogoUrl;
-                document.getElementById('dynamicAdminTitleNode').textContent = config.instituteName + " | Admin Panel";
-                
-                const desktopNavActiveExamLink = document.getElementById('desktopNavActiveExamLink');
-                if (desktopNavActiveExamLink) desktopNavActiveExamLink.className = `px-3 py-2 rounded-md bg-${config.accentColorClass} text-white font-medium`;
-                
-                const mobileNavActiveExamLink = document.getElementById('mobileNavActiveExamLink');
-                if (mobileNavActiveExamLink) mobileNavActiveExamLink.className = `px-3 py-2 rounded-md bg-${config.accentColorClass} text-white font-medium text-center`;
-                
-                const manualQueueQuestionItemButton = document.getElementById('manualQueueQuestionItemButton');
-                if (manualQueueQuestionItemButton) manualQueueQuestionItemButton.className = `w-full bg-${config.accentColorClass} hover:bg-${config.hoverColorClass} text-white font-bold py-2 px-4 rounded-lg text-sm`;
+        toggleBtn.addEventListener('click', () => {
+            if(drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden');
+                iconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            } else {
+                drawer.classList.add('hidden');
+                iconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
             }
-
-            // --- 🛡️ Guardrails Session Authentication Lock Interceptor ---
-            const checkSessionLock = setInterval(() => {
-                if (window.auth && window.onAuthStateChanged) {
-                    clearInterval(checkSessionLock);
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            try {
-                                const adminCheckDoc = await window.getDoc(window.doc(window.db, "users", user.uid));
-                                if (!adminCheckDoc.exists() || adminCheckDoc.data().role !== "ADMIN") {
-                                    window.location.replace("../login.html");
-                                } else {
-                                    // ⚡ CRITICAL REPAIR FLOW FIX: Mount dependencies ONLY after explicit verification is complete
-                                    initializeQuillEditorCanvas();
-                                    mountLiveExamsInventoryListener();
-                                }
-                            } catch (securityHandshakeError) {
-                                console.error("Database initialization clearance stalled:", securityHandshakeError);
-                                window.location.replace("../login.html");
-                            }
-                        } else {
-                            window.location.replace("../login.html");
-                        }
-                    });
-                }
-            }, 50);
-
-            // --- 🖋️ Rich Text Editor Canvas Bootstrapper ---
-            function initializeQuillEditorCanvas() {
-                if (document.getElementById('qTextEditor')) {
-                    runtimeQuillInstance = new Quill('#qTextEditor', {
-                        modules: {
-                            toolbar: [
-                                ['bold', 'italic', 'underline'],
-                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                ['clean']
-                            ]
-                        },
-                        placeholder: 'Formulate your rich question context guidelines or equation metrics structural layouts...',
-                        theme: 'snow'
-                    });
-                }
-            }
-
-            // --- 📋 Manual Item Push Interceptor Action ---
-            const questionForm = document.getElementById('questionForm');
-            questionForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const htmlContentText = runtimeQuillInstance.root.innerHTML.trim();
-                const textLengthCheck = runtimeQuillInstance.getText().trim();
-
-                if (!textLengthCheck || htmlContentText === "<p><br></p>") {
-                    alert("Please formulate your rich text question query details within the editor frame workspace.");
-                    return;
-                }
-
-                const payloadItem = {
-                    questionText: htmlContentText,
-                    optionA: document.getElementById('optA').value.trim(),
-                    optionB: document.getElementById('optB').value.trim(),
-                    optionC: document.getElementById('optC').value.trim(),
-                    optionD: document.getElementById('optD').value.trim(),
-                    correctAnswerKey: document.getElementById('correctOpt').value,
-                    marksPerQuestion: parseInt(document.getElementById('qMarks').value) || 1
-                };
-
-                queuedQuestionsArray.push(payloadItem);
-                renderCompilationPreviewList();
-                
-                // Clear out current input matrices fields to avoid duplications
-                runtimeQuillInstance.setContents([]);
-                document.getElementById('optA').value = "";
-                document.getElementById('optB').value = "";
-                document.getElementById('optC').value = "";
-                document.getElementById('optD').value = "";
-                document.getElementById('qMarks').value = "1";
-            });
-
-            // --- ⚡ Bulk CSV Spreadsheet Grid Parsing Engine Pipeline ---
-            const csvFileInput = document.getElementById('csvFileInput');
-            csvFileInput.addEventListener('change', (e) => {
-                const targetFileBlob = e.target.files[0];
-                if (!targetFileBlob) return;
-
-                const fileFileReader = new FileReader();
-                fileFileReader.onload = function(evt) {
-                    const rawTextContent = evt.target.result;
-                    const textRowsArray = rawTextContent.split(/\r?\n/);
-                    let validParsedCount = 0;
-
-                    textRowsArray.forEach((rowString, idx) => {
-                        if (idx === 0 || !rowString.trim()) return; // Bypass header configuration metrics rows cleanly
-                        
-                        // Parse safely handling embedded comma structures quotes split loops
-                        const columns = rowString.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || rowString.split(',');
-                        if (columns.length >= 6) {
-                            queuedQuestionsArray.push({
-                                questionText: columns[0].replace(/^"|"$/g, '').trim(),
-                                optionA: columns[1].replace(/^"|"$/g, '').trim(),
-                                optionB: columns[2].replace(/^"|"$/g, '').trim(),
-                                optionC: columns[3].replace(/^"|"$/g, '').trim(),
-                                optionD: columns[4].replace(/^"|"$/g, '').trim(),
-                                correctAnswerKey: columns[5].replace(/^"|"$/g, '').trim().toUpperCase(),
-                                marksPerQuestion: parseInt(columns[6]) || 1
-                            });
-                            validParsedCount++;
-                        }
-                    });
-
-                    alert(`Bulk parsing loop finalized successfully. Appended ${validParsedCount} item questions to the compilation stage layout matrix stack.`);
-                    renderCompilationPreviewList();
-                    csvFileInput.value = ""; // Clear file target node
-                };
-                fileFileReader.readAsText(targetFileBlob);
-            });
-
-            // --- 🔄 Synchronize UI Preview Interface Render Vectors ---
-            function renderCompilationPreviewList() {
-                const outletListContainer = document.getElementById('questionsPreviewList');
-                document.getElementById('questionCounter').textContent = `Queued Questions: ${queuedQuestionsArray.length}`;
-
-                if (queuedQuestionsArray.length === 0) {
-                    outletListContainer.innerHTML = `<p class="text-sm text-gray-500 py-4 text-center">No structural components queued inside the current scope stack framework.</p>`;
-                    return;
-                }
-
-                outletListContainer.innerHTML = "";
-                queuedQuestionsArray.forEach((item, pointerIndex) => {
-                    const nodeWrapperItem = document.createElement('div');
-                    nodeWrapperItem.className = "py-3 text-sm flex items-start justify-between gap-4 text-gray-300";
-                    nodeWrapperItem.innerHTML = `
-                        <div class="space-y-1 w-full">
-                            <div class="font-bold text-gray-100 flex items-center gap-2">
-                                <span class="text-blue-400">Q.${pointerIndex + 1}</span> 
-                                <div class="inline-block font-sans">${item.questionText}</div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-x-4 text-xs text-gray-400 font-mono mt-1">
-                                <div>A: ${item.optionA}</div><div>B: ${item.optionB}</div>
-                                <div>C: ${item.optionC}</div><div>D: ${item.optionD}</div>
-                            </div>
-                            <div class="text-[11px] text-gray-500 font-bold font-mono">
-                                CORRECT KEY: <span class="text-emerald-400">${item.correctAnswerKey}</span> | EVALUATION WEIGHT: ${item.marksPerQuestion} M
-                            </div>
-                        </div>
-                        <button type="button" class="text-red-500 hover:text-red-400 text-xs font-bold font-mono p-1" data-index="${pointerIndex}">DELETE</button>
-                    `;
-                    
-                    nodeWrapperItem.querySelector('button').addEventListener('click', (evt) => {
-                        const targetIdPointer = parseInt(evt.target.getAttribute('data-index'));
-                        queuedQuestionsArray.splice(targetIdPointer, 1);
-                        renderCompilationPreviewList();
-                    });
-                    
-                    outletListContainer.appendChild(nodeWrapperItem);
-                });
-            }
-
-            // --- 💾 Commit & Publish Form Submission Endpoint Pipeline ---
-            const publishExamBtn = document.getElementById('publishExamBtn');
-            publishExamBtn.addEventListener('click', async () => {
-                const targetExamId = document.getElementById('editingExamDocId').value;
-                const examTitle = document.getElementById('examTitle').value.trim();
-                const examSubject = document.getElementById('examSubject').value.trim().toUpperCase();
-                const examDuration = parseInt(document.getElementById('examDuration').value);
-                const examStart = document.getElementById('examStart').value;
-                const examEnd = document.getElementById('examEnd').value;
-                const examInstructions = document.getElementById('examInstructions').value.trim();
-
-                // Extract checked values vectors from checkbox standard nodes
-                const selectedStandardsArray = [];
-                document.querySelectorAll('.std-checkbox:checked').forEach(box => {
-                    selectedStandardsArray.push(box.value);
-                });
-
-                if (!examTitle || !examSubject || !examDuration || !examStart || !examEnd || !examInstructions) {
-                    alert("Please satisfy all primary exam parameters form conditions correctly.");
-                    return;
-                }
-                if (selectedStandardsArray.length === 0) {
-                    alert("Please allocate at least one target class standard stream checkbox node.");
-                    return;
-                }
-                if (queuedQuestionsArray.length === 0) {
-                    alert("Your manual matrix question pool is empty. Please compile or load questions before publishing.");
-                    return;
-                }
-
-                publishExamBtn.disabled = true;
-                publishExamBtn.textContent = "Processing Blueprint Deployment...";
-
-                // Map cumulative weight total points metrics score calculation
-                let totalExamMarksCalculation = 0;
-                queuedQuestionsArray.forEach(q => totalExamMarksCalculation += q.marksPerQuestion);
-
-                const examinationSchemaPayloadObject = {
-                    title: examTitle,
-                    subject: examSubject,
-                    standards: selectedStandardsArray,
-                    durationMinutes: examDuration,
-                    startTimestamp: new Date(examStart).getTime(),
-                    endTimestamp: new Date(examEnd).getTime(),
-                    instructions: examInstructions,
-                    questions: queuedQuestionsArray,
-                    totalMarks: totalExamMarksCalculation,
-                    updatedAt: Date.now()
-                };
-
-                try {
-                    if (targetExamId) {
-                        // Operational Mode: Overwrite structural update blueprint changes path
-                        await window.updateDoc(window.doc(window.db, "exams", targetExamId), examinationSchemaPayloadObject);
-                        alert(`Exam execution modifications saved smoothly for "${examTitle}".`);
-                    } else {
-                        // Operational Mode: Generate fresh document schema collection entry
-                        await window.addDoc(window.collection(window.db, "exams"), examinationSchemaPayloadObject);
-                        alert(`New exam blueprint "${examTitle}" committed successfully live.`);
-                    }
-                    resetAssessmentBuilderWorkspaceState();
-                } catch(err) {
-                    console.error("Database schema push dropped:", err);
-                    alert("Database write rejected. Check Firestore administrative matching rules.");
-                } finally {
-                    publishExamBtn.disabled = false;
-                    publishExamBtn.textContent = "Commit & Publish Final Exam";
-                }
-            });
-
-            // --- 📋 Live Database Engine Inventory Realtime Snapshots Listener ---
-            function mountLiveExamsInventoryListener() {
-                const queryRef = window.query(window.collection(window.db, "exams"));
-                window.onSnapshot(queryRef, (snapshot) => {
-                    const tableOutletNode = document.getElementById('examsInventoryTableBodyOutlet');
-                    tableOutletNode.innerHTML = "";
-
-                    if (snapshot.empty) {
-                        tableOutletNode.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No published exams found in your database repository.</td></tr>`;
-                        return;
-                    }
-
-                    snapshot.forEach(doc => {
-                        const id = doc.id;
-                        const data = doc.data();
-                        const tr = document.createElement('tr');
-                        tr.className = "hover:bg-gray-800/40 text-sm transition-colors";
-                        
-                        tr.innerHTML = `
-                            <td class="py-3 px-2 font-medium text-white"><span class="text-xs font-mono font-bold text-blue-400 block uppercase tracking-wide">${data.subject}</span>${data.title}</td>
-                            <td class="py-3 px-2 text-gray-400 font-mono text-xs">${data.standards ? data.standards.join(', ') : 'Not Allocated'}</td>
-                            <td class="py-3 px-2 text-gray-300 font-semibold">${data.durationMinutes} Mins</td>
-                            <td class="py-3 px-2 text-purple-400 font-bold font-mono">${data.totalMarks} Marks</td>
-                            <td class="py-3 px-2 text-right space-x-2">
-                                <button class="edit-exam-trigger-btn text-amber-500 hover:text-amber-400 text-xs font-bold font-mono px-2 py-1 border border-amber-900/40 bg-amber-950/20 rounded" data-id="${id}" data-payload='${JSON.stringify(data).replace(/'/g, "&apos;")}'>EDIT</button>
-                                <button class="delete-exam-trigger-btn text-red-500 hover:text-red-400 text-xs font-bold font-mono px-2 py-1 border border-red-900/40 bg-red-950/20 rounded" data-id="${id}">REMOVE</button>
-                            </td>
-                        `;
-                        tableOutletNode.appendChild(tr);
-                    });
-
-                    // Bind active administrative actions hooks
-                    document.querySelectorAll('.edit-exam-trigger-btn').forEach(btn => btn.addEventListener('click', enterExamEditingModeState));
-                    document.querySelectorAll('.delete-exam-trigger-btn').forEach(btn => btn.addEventListener('click', executeExamDeletionSweep));
-                });
-            }
-
-            // --- 🔄 State Control Flow Logic Adjusters ---
-            function enterExamEditingModeState(evt) {
-                const targetDocId = evt.target.getAttribute('data-id');
-                const rawSchemaPayload = JSON.parse(evt.target.getAttribute('data-payload'));
-
-                document.getElementById('editingExamDocId').value = targetDocId;
-                document.getElementById('examTitle').value = rawSchemaPayload.title;
-                document.getElementById('examSubject').value = rawSchemaPayload.subject;
-                document.getElementById('examDuration').value = rawSchemaPayload.durationMinutes;
-                document.getElementById('examInstructions').value = rawSchemaPayload.instructions;
-                
-                // Format epoch timestamps back to local HTML date formats arrays strings
-                document.getElementById('examStart').value = new Date(rawSchemaPayload.startTimestamp - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-                document.getElementById('examEnd').value = new Date(rawSchemaPayload.endTimestamp - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-
-                // Re-sync specific standard checkbox status arrays keys mappings
-                document.querySelectorAll('.std-checkbox').forEach(box => {
-                    box.checked = rawSchemaPayload.standards ? rawSchemaPayload.standards.includes(box.value) : false;
-                });
-
-                queuedQuestionsArray = [...rawSchemaPayload.questions];
-                renderCompilationPreviewList();
-
-                document.getElementById('metaFormTitle').textContent = "Modify Exam Sheet";
-                document.getElementById('cancelExamEditBtn').classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            async function executeExamDeletionSweep(evt) {
-                const targetDocId = evt.target.getAttribute('data-id');
-                if (confirm("Are you sure you want to permanently erase this published assessment and delete all student questions parameters logs?")) {
-                    try {
-                        await window.deleteDoc(window.doc(window.doc(window.db, "exams", targetDocId)));
-                        alert("Examination record wiped from live repositories index.");
-                        resetAssessmentBuilderWorkspaceState();
-                    } catch(err) { console.error(err); }
-                }
-            }
-
-            function resetAssessmentBuilderWorkspaceState() {
-                document.getElementById('editingExamDocId').value = "";
-                document.getElementById('examMetaForm').reset();
-                document.getElementById('questionForm').reset();
-                
-                document.querySelectorAll('.std-checkbox').forEach(box => box.checked = false);
-                if (runtimeQuillInstance) runtimeQuillInstance.setContents([]);
-                
-                queuedQuestionsArray = [];
-                renderCompilationPreviewList();
-
-                document.getElementById('metaFormTitle').textContent = "Exam Parameters";
-                document.getElementById('cancelExamEditBtn').classList.add('hidden');
-            }
-
-            document.getElementById('cancelExamEditBtn').addEventListener('click', resetAssessmentBuilderWorkspaceState);
-
-            // --- 📱 Mobile Toggle Drawer Navigation Event Interface Handler ---
-            const toggleBtn = document.getElementById('adminMenuToggleBtn');
-            const drawer = document.getElementById('adminDropdownDrawer');
-            const iconPath = document.getElementById('adminMenuIconPath');
-
-            toggleBtn.addEventListener('click', () => {
-                if (drawer.classList.contains('hidden')) {
-                    drawer.classList.remove('hidden');
-                    iconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
-                } else {
-                    drawer.classList.add('hidden');
-                    iconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
-                }
-            });
-
-            const bindSignOutLogic = async () => {
-                if (confirm("Confirm security administrative log out request?")) {
-                    await window.signOut(window.auth);
-                    window.location.replace("../login.html");
-                }
-            };
-            document.getElementById('mobileLogoutBtn')?.addEventListener('click', bindSignOutLogic);
-            document.getElementById('logoutBtn')?.addEventListener('click', bindSignOutLogic);
         });
+
+        const handleMobileSignOut = async () => {
+            if(confirm("Confirm security administrative log out request?")) {
+                await window.signOut(window.auth);
+                window.location.replace("../login.html");
+            }
+        };
+        document.getElementById('mobileLogoutBtn')?.addEventListener('click', handleMobileSignOut);
     </script>
 </body>
 </html>

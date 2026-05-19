@@ -3,72 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Student Registries - Admin Console</title>
+    <title>Manage Students - Admin Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../css/custom.css">
-    <script src="../client-settings.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
+    <!-- Top Navigation Header Bar -->
     <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="dynamicAdminLogoNode" src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                <span id="dynamicAdminTitleNode" class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
+                <img src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+                <span class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
             </div>
             
+            <!-- Mobile Menu Toggle Button -->
             <button id="adminMenuToggleBtn" class="md:hidden text-gray-400 hover:text-white focus:outline-none p-2 rounded-md hover:bg-gray-700/50 transition-colors">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path id="adminMenuIconPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
 
+            <!-- Desktop View Menu Links -->
             <nav class="hidden md:flex space-x-4 text-sm">
                 <a href="admin-dashboard.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Overview</a>
                 <a href="create-exam.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Exams</a>
-                <a href="manage-students.html" id="desktopNavActiveStudentsLink" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium">Students</a>
+                <a href="manage-students.html" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium">Students</a>
                 <a href="student-performance.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Analytics</a>
                 <a href="results.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300">Grades</a>
                 <button id="logoutBtn" class="px-3 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium transition-colors">Sign Out</button>
             </nav>
         </div>
 
+        <!-- Mobile View Dropdown Navigation Drawer Overlay -->
         <div id="adminDropdownDrawer" class="hidden md:hidden border-b border-gray-700 bg-gray-800 px-4 py-3 flex flex-col space-y-2 text-sm shadow-xl">
             <a href="admin-dashboard.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Overview</a>
             <a href="create-exam.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Exams</a>
-            <a href="manage-students.html" id="mobileNavActiveStudentsLink" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium text-center">Students</a>
+            <a href="manage-students.html" class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium text-center">Students</a>
             <a href="student-performance.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Analytics</a>
             <a href="results.html" class="px-3 py-2 rounded-md hover:bg-gray-700 text-gray-300 text-center">Grades</a>
             <button id="mobileLogoutBtn" class="w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition-colors shadow-md">Sign Out Panel</button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div class="border-b border-gray-700 pb-4">
-            <h1 class="text-3xl font-extrabold tracking-tight text-white">Student Registration Hub</h1>
-            <p class="text-sm text-gray-400 mt-1">Manually provision single profiles into authentication databases or manage current active profiles.</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-700 pb-6 mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white">Student Registration Matrix</h1>
+                <p class="text-sm text-gray-400 mt-1">Provision academic enrollment IDs, manage target classes, and perform bulk entries.</p>
+            </div>
+        </div>
+
+        <div class="mb-8 bg-gradient-to-r from-slate-800 to-gray-800 p-6 rounded-xl border border-dashed border-gray-600 shadow-xl">
+            <h2 class="text-md font-bold text-blue-400 uppercase tracking-wider mb-2">⚡ Bulk Student Spreadsheet Import</h2>
+            <p class="text-xs text-gray-400 mb-4">Upload a .csv file populated with student headers to generate profiles instantly.</p>
+            <input type="file" id="studentCsvFileInput" accept=".csv" class="text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-900/50 file:text-blue-300 hover:file:bg-blue-900 cursor-pointer">
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl h-fit">
-                <h2 class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Manual Provision Form</h2>
-                <form id="studentRegistrationForm" class="space-y-4">
+            <!-- Form Block -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 h-fit shadow-xl">
+                <h2 id="formTitle" class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Add New Student Profile</h2>
+                <form id="studentForm" class="space-y-4">
+                    <input type="hidden" id="studentDocId">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Admission Number / Username</label>
-                        <input type="text" id="admissionNumber" required placeholder="e.g., DEMO0001" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Admission Number</label>
+                        <input type="text" id="admNum" required placeholder="e.g., SEA20260002" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Full Student Name</label>
-                        <input type="text" id="studentName" required placeholder="e.g., John Doe" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Student Full Name</label>
+                        <input type="text" id="studName" required placeholder="e.g., Rajesh Kumar" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Mobile Contact Number</label>
-                        <input type="tel" id="mobileNumber" required placeholder="e.g., 9898989898" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Class Standard Stream</label>
-                        <select id="studentStandard" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                            <option value="">-- Choose Allocation --</option>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Class / Standard Allocation</label>
+                        <select id="studStd" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
+                            <option value="">-- Choose Standard --</option>
                             <option value="STD 08 (GM)">STD 08 (GM)</option>
                             <option value="STD 08 (EM)">STD 08 (EM)</option>
                             <option value="STD 09 (GM)">STD 09 (GM)</option>
@@ -76,32 +85,35 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Temporary Security Password</label>
-                        <input type="password" id="temporaryPassword" required placeholder="Min 6 characters" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Mobile Contact Number</label>
+                        <input type="tel" id="studMob" required placeholder="10 digit numeric value" pattern="[0-9]{10}" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                     </div>
-
-                    <button type="submit" id="registerStudentBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-lg text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-2">
-                        <span id="regSpinner" class="hidden animate-spin rounded-full h-4 w-4 border-2 border-t-transparent border-white"></span>
-                        <span id="regBtnText">Provision Account</span>
-                    </button>
+                    <div class="pt-4 flex space-x-2">
+                        <button type="submit" id="saveBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm">Save Record</button>
+                        <button type="button" id="cancelEditBtn" class="hidden flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm">Cancel</button>
+                    </div>
                 </form>
             </div>
 
-            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
-                <h2 class="text-xl font-bold text-white mb-4">Active Provisioned Student registries</h2>
+            <!-- Records Spreadsheet Grid -->
+            <div class="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl overflow-hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-white">Active Student Records</h2>
+                    <span id="studentCount" class="bg-blue-900/50 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700 font-semibold">Total: 0</span>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="border-b border-gray-700 text-gray-400 font-semibold">
-                                <th class="pb-3 px-2">Admission No</th>
-                                <th class="pb-3 px-2">Name / Email</th>
-                                <th class="pb-3 px-2">Allocated Stream</th>
-                                <th class="pb-3 px-2">Mobile Contact</th>
-                                <th class="pb-3 px-2 text-right">Operations</th>
+                                <th class="pb-3 px-2">Adm. No.</th>
+                                <th class="pb-3 px-2">Name</th>
+                                <th class="pb-3 px-2">Standard</th>
+                                <th class="pb-3 px-2">Mobile</th>
+                                <th class="pb-3 px-2 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="studentTableBodyOutlet" class="divide-y divide-gray-700/50 text-gray-300">
-                            <tr><td colspan="5" class="py-8 text-center text-gray-500">Querying live student records index...</td></tr>
+                        <tbody id="studentTableBody" class="divide-y divide-gray-700/50 text-gray-300">
+                            <tr><td colspan="5" class="py-8 text-center text-gray-500">Querying live registries...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -110,168 +122,32 @@
     </main>
 
     <script type="module" src="../js/firebase-config.js"></script>
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            const config = window.clientPortalSettings;
-            
-            // ⚡ Dynamic Branding Injection Mappings
-            if (config) {
-                document.title = `${config.instituteName} - Manage Students`;
-                document.getElementById('dynamicAdminLogoNode').src = "../" + config.brandedLogoUrl;
-                document.getElementById('dynamicAdminTitleNode').textContent = config.instituteName + " | Admin Panel";
-                
-                document.getElementById('desktopNavActiveStudentsLink').className = `px-3 py-2 rounded-md bg-${config.accentColorClass} text-white font-medium`;
-                document.getElementById('mobileNavActiveStudentsLink').className = `px-3 py-2 rounded-md bg-${config.accentColorClass} text-white font-medium text-center`;
-                document.getElementById('registerStudentBtn').className = `w-full bg-${config.accentColorClass} hover:bg-${config.hoverColorClass} text-white font-extrabold py-2.5 rounded-lg text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-2`;
+    <script type="module" src="../js/admin.js"></script>
+    <script>
+        // Synchronized Touch Drawer View Handlers Interceptor Loop
+        const toggleBtn = document.getElementById('adminMenuToggleBtn');
+        const drawer = document.getElementById('adminDropdownDrawer');
+        const iconPath = document.getElementById('adminMenuIconPath');
+
+        toggleBtn.addEventListener('click', () => {
+            if(drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden');
+                iconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            } else {
+                drawer.classList.add('hidden');
+                iconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
             }
-
-            // 🛡️ Session Security Guardrail Check
-            const sessionGuard = setInterval(() => {
-                if (window.auth && window.onAuthStateChanged) {
-                    clearInterval(sessionGuard);
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            const adminCheckDoc = await window.getDoc(window.doc(window.db, "users", user.uid));
-                            if (!adminCheckDoc.exists() || adminCheckDoc.data().role !== "ADMIN") {
-                                window.location.replace("../login.html");
-                            } else {
-                                mountLiveStudentsTableListener();
-                            }
-                        } else {
-                            window.location.replace("../login.html");
-                        }
-                    });
-                }
-            }, 50);
-
-            // --- 💾 FIXED ACCOUNT PROVISIONING PIPELINE FLOW ---
-            const registrationForm = document.getElementById('studentRegistrationForm');
-            const regSpinner = document.getElementById('regSpinner');
-            const regBtnText = document.getElementById('regBtnText');
-            const registerStudentBtn = document.getElementById('registerStudentBtn');
-
-            registrationForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const admissionNumber = document.getElementById('admissionNumber').value.trim().toUpperCase();
-                const studentName = document.getElementById('studentName').value.trim();
-                const mobileNumber = document.getElementById('mobileNumber').value.trim();
-                const selectedStandard = document.getElementById('studentStandard').value;
-                const temporaryPassword = document.getElementById('temporaryPassword').value.trim();
-
-                if (temporaryPassword.length < 6) {
-                    alert("Firebase security criteria mandates that passwords must contain at least 6 characters.");
-                    return;
-                }
-
-                registerStudentBtn.disabled = true;
-                regSpinner.classList.remove('hidden');
-                regBtnText.textContent = "Deploying Auth Profiling...";
-
-                try {
-                    const targetSuffix = (config && config.emailDomainSuffix) ? config.emailDomainSuffix : "portal.com";
-                    const studentCompiledEmail = `${admissionNumber}@${targetSuffix}`;
-
-                    // 1. Create the secure user inside the Firebase Authentication registry layout
-                    const authCredential = await window.createUserWithEmailAndPassword(window.auth, studentCompiledEmail, temporaryPassword);
-                    
-                    // 2. 🗲 CRITICAL REPAIR FIX: Extract the true alphanumeric user account identity string
-                    const trueUserUid = authCredential.user.uid;
-
-                    regBtnText.textContent = "Mapping Firestore Metadata...";
-
-                    // 3. 🗲 CRITICAL REPAIR FIX: Save document using the real User UID as the primary Document ID block
-                    await window.setDoc(window.doc(window.db, "users", trueUserUid), {
-                        admissionNumber: admissionNumber,
-                        studentName: studentName,
-                        mobileNumber: mobileNumber,
-                        standard: selectedStandard,
-                        role: "STUDENT",
-                        email: studentCompiledEmail,
-                        createdAt: Date.now()
-                    });
-
-                    alert(`Student profile matching reference [${admissionNumber}] provisioned flawlessly under true token node mapping!`);
-                    registrationForm.reset();
-                } catch (systemError) {
-                    console.error("Manual profiling loop pipeline breakdown:", systemError);
-                    alert("Registration Pipeline Aborted: " + systemError.message);
-                } finally {
-                    registerStudentBtn.disabled = false;
-                    regSpinner.classList.add('hidden');
-                    regBtnText.textContent = "Provision Account";
-                }
-            });
-
-            // --- 📋 Realtime Students Index Snapshots Listener Synchronization ---
-            function mountLiveStudentsTableListener() {
-                const studentQueryRef = window.query(window.collection(window.db, "users"), window.where("role", "==", "STUDENT"));
-                window.onSnapshot(studentQueryRef, (snapshot) => {
-                    const tableOutletNode = document.getElementById('studentTableBodyOutlet');
-                    tableOutletNode.innerHTML = "";
-
-                    if (snapshot.empty) {
-                        tableOutletNode.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active students found in your registered database repository grids.</td></tr>`;
-                        return;
-                    }
-
-                    snapshot.forEach(doc => {
-                        const id = doc.id;
-                        const data = doc.data();
-                        const tr = document.createElement('tr');
-                        tr.className = "hover:bg-gray-800/40 text-sm transition-colors";
-                        
-                        tr.innerHTML = `
-                            <td class="py-3 px-2 font-mono font-bold text-blue-400 uppercase tracking-wider">${data.admissionNumber}</td>
-                            <td class="py-3 px-2 font-medium text-white"><div>${data.studentName}</div><div class="text-xs font-mono text-gray-500">${data.email}</div></td>
-                            <td class="py-3 px-2 text-gray-300 font-semibold">${data.standard}</td>
-                            <td class="py-3 px-2 text-gray-400 font-mono text-xs">${data.mobileNumber || "N/A"}</td>
-                            <td class="py-3 px-2 text-right">
-                                <button class="erase-student-trigger-btn text-red-500 hover:text-red-400 text-xs font-bold font-mono px-2 py-1 border border-transparent hover:border-red-900/40 rounded transition-colors" data-id="${id}">REMOVE</button>
-                            </td>
-                        `;
-                        tableOutletNode.appendChild(tr);
-                    });
-
-                    // Dynamic element operational deletion routing binds
-                    document.querySelectorAll('.erase-student-trigger-btn').forEach(btn => {
-                        btn.addEventListener('click', async (evt) => {
-                            const targetDocId = evt.target.getAttribute('data-id');
-                            if (confirm("Are you sure you want to delete this student data profile tracking log layout? (Note: This does not clear Auth records entries metrics rows natively).")) {
-                                try {
-                                    await window.deleteDoc(window.doc(window.db, "users", targetDocId));
-                                    alert("Student document records swept safely from repository.");
-                                } catch (err) { console.error(err); }
-                            }
-                        });
-                    });
-                });
-            }
-
-            // Side Navigation Drawer Toggle Binding Layout Controls Interceptor Mappings
-            const toggleBtn = document.getElementById('adminMenuToggleBtn');
-            const drawer = document.getElementById('adminDropdownDrawer');
-            const iconPath = document.getElementById('adminMenuIconPath');
-
-            toggleBtn.addEventListener('click', () => {
-                if(drawer.classList.contains('hidden')) {
-                    drawer.classList.remove('hidden');
-                    iconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
-                } else {
-                    drawer.classList.add('hidden');
-                    iconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
-                }
-            });
-
-            const executeSignOutSession = async () => {
-                if(confirm("Confirm secure administrative sign out profile transaction?")) {
-                    await window.signOut(window.auth);
-                    window.location.replace("../login.html");
-                }
-            };
-            document.getElementById('logoutBtn')?.addEventListener('click', executeSignOutSession);
-            document.getElementById('mobileLogoutBtn')?.addEventListener('click', executeSignOutSession);
         });
+
+        const triggerSystemLogOut = async () => {
+            if(confirm("Confirm secure sign out request?")) {
+                await window.signOut(window.auth);
+                window.location.replace("../login.html");
+            }
+        };
+
+        document.getElementById('logoutBtn')?.addEventListener('click', triggerSystemLogOut);
+        document.getElementById('mobileLogoutBtn')?.addEventListener('click', triggerSystemLogOut);
     </script>
 </body>
 </html>

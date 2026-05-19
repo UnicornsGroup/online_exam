@@ -6,15 +6,15 @@
     <title>Student Dashboard - Assessment Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/custom.css">
-    <script src="client-settings.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
+    <!-- Top Branding & Navigation Bar -->
     <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="dynamicDashboardLogoNode" src="assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                <span id="dynamicDashboardTitleNode" class="font-bold text-lg text-white tracking-wide">Suraj English Academy</span>
+                <img src="assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+                <span class="font-bold text-lg text-white tracking-wide">Suraj English Academy</span>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="hidden sm:block text-right">
@@ -30,12 +30,14 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        <!-- Welcome banner -->
         <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 border border-blue-700/40 shadow-xl mb-8">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white">Welcome back to your Assessment Hub</h1>
             <p class="text-sm text-blue-200 mt-1">Access scheduled examination sessions, complete live test questionnaires, and view grade distributions below.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Side Area: Active & Scheduled Exams (Takes 2 Columns) -->
             <div class="lg:col-span-2 space-y-6">
                 <div>
                     <h2 class="text-xl font-bold text-white mb-4 flex items-center">
@@ -53,6 +55,7 @@
                 </div>
             </div>
 
+            <!-- Right Side Area: Historical Submissions and Scorecards -->
             <div class="lg:col-span-1">
                 <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl">
                     <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2">Your Performance History</h2>
@@ -64,187 +67,8 @@
         </div>
     </main>
 
+    <!-- App Runtime Entry-Points -->
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/dashboard.js"></script>
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            // --- ⚡ Pull values directly from client-settings.js dynamically ---
-            const config = window.clientPortalSettings;
-            if (config) {
-                document.title = `${config.instituteName} - Student Dashboard`;
-                document.getElementById('dynamicDashboardLogoNode').src = config.brandedLogoUrl;
-                document.getElementById('dynamicDashboardTitleNode').textContent = config.instituteName;
-            }
-
-            // --- 🛡️ Guardrails Session Authentication Lock & Profile Initializer ---
-            const checkSessionLock = setInterval(() => {
-                if (window.auth && window.onAuthStateChanged) {
-                    clearInterval(checkSessionLock);
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            try {
-                                const profileSnap = await window.getDoc(window.doc(window.db, "users", user.uid));
-                                if (!profileSnap.exists()) {
-                                    alert("Profile database record missing. Redirecting to auth gate.");
-                                    await window.signOut(window.auth);
-                                    window.location.replace("login.html");
-                                    return;
-                                }
-
-                                const studentData = profileSnap.data();
-                                
-                                // Redirect to admin suite if an administrator logs in here by mistake
-                                if (studentData.role === "ADMIN") {
-                                    window.location.replace("admin/admin-dashboard.html");
-                                    return;
-                                }
-
-                                // Update Top Ribbon Header Displays
-                                document.getElementById('studentNameDisplay').textContent = studentData.studentName || "Student User";
-                                document.getElementById('studentStdDisplay').textContent = studentData.standard || "Unallocated Stream";
-
-                                // ⚡ Run Queries safely passing the authenticated profile traits
-                                mountLiveExamsListener(studentData.standard, studentData.admissionNumber);
-                                mountPerformanceHistoryListener(studentData.admissionNumber);
-
-                            } catch (err) {
-                                console.error("Handshake profile initialization failure:", err);
-                                window.location.replace("login.html");
-                            }
-                        } else {
-                            window.location.replace("login.html");
-                        }
-                    });
-                }
-            }, 50);
-
-            // --- 📄 Live Exams Listener (Uses 'array-contains' for the standards list match) ---
-            function mountLiveExamsListener(standardStream, admissionNumber) {
-                const examsContainer = document.getElementById('activeExamsContainer');
-                
-                // 🗲 Filter exams collection using 'array-contains'
-                const examsQuery = window.query(
-                    window.collection(window.db, "exams"),
-                    window.where("standards", "array-contains", standardStream)
-                );
-
-                window.onSnapshot(examsQuery, (snapshot) => {
-                    examsContainer.innerHTML = "";
-
-                    if (snapshot.empty) {
-                        examsContainer.innerHTML = `
-                            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 col-span-2 text-center py-12 text-gray-500 text-sm">
-                                No assessment sessions currently scheduled for your standard stream allocation (${standardStream}).
-                            </div>`;
-                        return;
-                    }
-
-                    snapshot.forEach((doc) => {
-                        const examId = doc.id;
-                        const exam = doc.data();
-                        const timeNow = Date.now();
-
-                        // Process Assessment Activity Windows Mappings
-                        const isWindowOpen = timeNow >= exam.startTimestamp && (exam.endTimestamp ? timeNow <= exam.endTimestamp : true);
-                        const hasEnded = exam.endTimestamp ? timeNow > exam.endTimestamp : false;
-
-                        let statusBadgeHtml = '';
-                        let primaryButtonHtml = '';
-
-                        if (hasEnded) {
-                            statusBadgeHtml = `<span class="text-[10px] font-mono uppercase px-2 py-0.5 border rounded-full bg-red-950/40 text-red-400 border-red-900/60">Closed</span>`;
-                            primaryButtonHtml = `<button disabled class="opacity-40 bg-gray-700 text-gray-400 font-bold text-xs px-4 py-2.5 rounded-lg cursor-not-allowed">Ended</button>`;
-                        } else if (isWindowOpen) {
-                            statusBadgeHtml = `<span class="text-[10px] font-mono uppercase px-2 py-0.5 border rounded-full bg-emerald-950/40 text-emerald-400 border-emerald-800">Active Live</span>`;
-                            primaryButtonHtml = `<button onclick="launchSecureExamWindow('${examId}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-colors shadow-md">Initialize Test</button>`;
-                        } else {
-                            statusBadgeHtml = `<span class="text-[10px] font-mono uppercase px-2 py-0.5 border rounded-full bg-amber-950/40 text-amber-400 border-amber-800">Scheduled</span>`;
-                            primaryButtonHtml = `<button disabled class="opacity-50 bg-gray-800 text-gray-500 font-bold text-xs px-4 py-2.5 rounded-lg cursor-not-allowed border border-gray-700">Locked</button>`;
-                        }
-
-                        const examCardDiv = document.createElement('div');
-                        examCardDiv.className = "bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg flex flex-col justify-between space-y-4 hover:border-gray-600 transition-all";
-                        examCardDiv.innerHTML = `
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-mono text-blue-400 font-bold uppercase tracking-wider">${exam.subject}</span>
-                                    ${statusBadgeHtml}
-                                </div>
-                                <h3 class="text-md font-bold text-white tracking-tight">${exam.title}</h3>
-                                <p class="text-xs text-gray-400 font-mono">Weighting: <span class="text-purple-400 font-bold">${exam.totalMarks} Marks</span></p>
-                            </div>
-                            <div class="pt-3 border-t border-gray-700/50 flex items-center justify-between">
-                                <div class="flex items-center space-x-1 text-xs text-gray-400 font-mono">
-                                    <svg class="h-3.5 w-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span>${exam.durationMinutes} Mins</span>
-                                </div>
-                                ${primaryButtonHtml}
-                            </div>
-                        `;
-                        examsContainer.appendChild(examCardDiv);
-                    });
-                });
-            }
-
-            // --- 📊 Live Performance History Scores Listener ---
-            function mountPerformanceHistoryListener(admissionNumber) {
-                const historyContainer = document.getElementById('historyContainer');
-                
-                const resultsQuery = window.query(
-                    window.collection(window.db, "results"),
-                    window.where("admissionNumber", "==", admissionNumber)
-                );
-
-                window.onSnapshot(resultsQuery, (snapshot) => {
-                    historyContainer.innerHTML = "";
-
-                    if (snapshot.empty) {
-                        historyContainer.innerHTML = `<p class="text-sm text-gray-500 py-6 text-center">No structural submission records indexed for this profile block.</p>`;
-                        return;
-                    }
-
-                    snapshot.forEach((doc) => {
-                        const scoreData = doc.data();
-                        
-                        // Map color weights dynamically based on student performance ratio
-                        const scoringPercentage = (scoreData.scoreObtained / scoreData.totalPossibleMarks) * 100;
-                        const scoreColorClass = scoringPercentage >= 35 ? "text-emerald-400" : "text-red-400";
-
-                        const historyRowDiv = document.createElement('div');
-                        historyRowDiv.className = "p-3.5 bg-gray-900/50 border border-gray-700/60 rounded-xl flex items-center justify-between text-sm";
-                        historyRowDiv.innerHTML = `
-                            <div class="space-y-0.5">
-                                <h4 class="font-bold text-gray-100 tracking-tight">${scoreData.examTitle}</h4>
-                                <p class="text-xs text-gray-500 font-mono">${scoreData.subject} • Submitted</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="font-mono font-bold text-base ${scoreColorClass}">${scoreData.scoreObtained}</span>
-                                <span class="text-xs text-gray-500 font-mono">/${scoreData.totalPossibleMarks}</span>
-                            </div>
-                        `;
-                        historyContainer.appendChild(historyRowDiv);
-                    });
-                });
-            }
-
-            // --- 🚀 Secure Examination Execution Launcher Window Routing ---
-            window.launchSecureExamWindow = function(examId) {
-                if (confirm("Initialize examination sequence? Timer rules trigger on initialization canvas lock.")) {
-                    // 🗲 CRITICAL ROUTING REPAIR FIX: Changed targeting from 'take-exam.html' to match your actual file layout asset 'exam.html'
-                    window.location.href = `exam.html?id=${examId}`;
-                }
-            };
-
-            // --- 🚪 Authentication Security Session Termination Endpoint ---
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                if (confirm("Confirm secure student profile dashboard sign out?")) {
-                    await window.signOut(window.auth);
-                    window.location.replace("login.html");
-                }
-            });
-        });
-    </script>
 </body>
 </html>

@@ -1,38 +1,33 @@
 ﻿import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Grab parameters directly out of the 1-File config structure loaded in window context
-const currentKeysPayload = window.clientPortalSettings.firebaseConfig;
+const firebaseConfig = {
+  apiKey: "AIzaSyDM_yvNHBECUxAyjf0Q8c0OiJtfJFJS3ek",
+  authDomain: "onlineexam-4c87c.firebaseapp.com",
+  projectId: "onlineexam-4c87c",
+  appId: "1:911623761586:web:2795cb6637145123d9e3ab"
+};
 
-// Boot the direct database core instance for this folder workspace environment
-const app = initializeApp(currentKeysPayload);
-const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Bind variables globally so that the login.html inline module can read them instantly
-window.db = db;
 window.auth = auth;
+window.db = db;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
-
-// Firestore Node Module Mappings Binding Layers
-window.doc = doc; 
-window.getDoc = getDoc; 
-window.setDoc = setDoc; 
+window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.query = query;
+window.where = where;
 window.updateDoc = updateDoc;
 window.deleteDoc = deleteDoc;
-window.addDoc = addDoc; 
-window.collection = collection; 
-window.query = query; 
-window.where = where;
-window.getDocs = getDocs; 
-window.onSnapshot = onSnapshot;
 
-export { 
-    db, auth,
-    onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
-    doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, collection, query, where, getDocs, onSnapshot 
-};
+console.log("Firebase initialized successfully.");

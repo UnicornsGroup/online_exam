@@ -3,214 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examination Performance Scorecard</title>
+    <title>Assessment Performance Scorecard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="client-settings.js"></script>
+    <link rel="stylesheet" href="css/custom.css">
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen font-sans antialiased overflow-x-hidden p-4 sm:p-6">
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        
-        <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-4 text-center sm:text-left flex-col sm:flex-row">
-                <img id="dynamicResultLogoNode" src="assets/logo/logo.png" alt="Institute Logo" class="h-14 w-auto object-contain mb-2 sm:mb-0" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                <div>
-                    <h1 id="dynamicResultTitleNode" class="text-xl font-black text-white uppercase tracking-tight">Suraj English Academy</h1>
-                    <p id="dynamicResultTaglineNode" class="text-xs text-gray-400 font-mono">National Eligibility cum Entrance Test (NEET) Mock Matrix</p>
-                </div>
+    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="assets/logo/logo.png" alt="Logo" class="h-9 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+                <span class="font-bold text-sm sm:text-base text-white tracking-wide">Suraj English Academy | Performance Center</span>
             </div>
-            <div class="bg-gray-950 px-4 py-2 border border-gray-800 rounded-xl font-mono text-xs text-center sm:text-right">
-                <div class="text-gray-500">Log Generation Time</div>
-                <div id="scorecardGenerationTimestampDisplay" class="text-gray-300 font-bold">--/--/---- --:--</div>
-            </div>
-        </div>
-
-        <div class="bg-gray-900 border border-gray-800 px-6 py-4 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs shadow-inner">
-            <div><span class="text-gray-500 block uppercase text-[10px]">Candidate Name</span><span id="studentProfileNameDisplayNode" class="text-white font-bold text-sm">Loading...</span></div>
-            <div><span class="text-gray-500 block uppercase text-[10px]">Admission ID</span><span id="studentProfileAdmissionDisplayNode" class="text-blue-400 font-bold text-sm">Loading...</span></div>
-            <div><span class="text-gray-500 block uppercase text-[10px]">Standard / Div</span><span id="studentProfileStandardDisplayNode" class="text-gray-300 font-bold text-sm">Loading...</span></div>
-            <div><span class="text-gray-500 block uppercase text-[10px]">Testing Status</span><span id="studentProfileStatusDisplayNode" class="text-green-400 font-bold text-sm">Regular</span></div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-gradient-to-br from-blue-950/40 to-gray-900 border border-blue-900/50 p-6 rounded-2xl shadow-md text-center">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-blue-400 block mb-1">Total Marks Secured</span>
-                <span id="coreMetricsPointsScoreDisplayNode" class="text-4xl font-black text-white font-mono">000</span>
-                <span id="coreMetricsMaxPointsWeightDisplayNode" class="text-gray-500 text-sm block mt-1">out of 720</span>
-            </div>
-            <div class="bg-gradient-to-br from-indigo-950/40 to-gray-900 border border-indigo-900/50 p-6 rounded-2xl shadow-md text-center">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-indigo-400 block mb-1">Percentage Conversion</span>
-                <span id="coreMetricsPercentageRatioDisplayNode" class="text-4xl font-black text-indigo-400 font-mono">0%</span>
-                <span class="text-gray-500 text-xs block mt-1">Aggregate Metric</span>
-            </div>
-            <div class="bg-gradient-to-br from-emerald-950/40 to-gray-900 border border-emerald-900/50 p-6 rounded-2xl shadow-md text-center">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 block mb-1">Precision Accuracy Ratio</span>
-                <span id="coreMetricsAccuracyRatioDisplayNode" class="text-4xl font-black text-emerald-400 font-mono">0%</span>
-                <span class="text-gray-500 text-xs block mt-1">Correct vs Wrong Ratio</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
-                <h3 class="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider border-b border-gray-800 pb-2">Item Response Vectors Analytics</h3>
-                <div class="space-y-3 font-mono text-xs">
-                    <div class="flex items-center justify-between border-b border-gray-800/40 pb-1.5">
-                        <span class="flex items-center space-x-2"><span class="w-2.5 h-2.5 bg-green-500 rounded-sm"></span><span>Correct Responses</span></span>
-                        <span id="breakdownQtyCorrectDisplayNode" class="font-bold text-green-400 text-sm">0</span>
-                    </div>
-                    <div class="flex items-center justify-between border-b border-gray-800/40 pb-1.5">
-                        <span class="flex items-center space-x-2"><span class="w-2.5 h-2.5 bg-red-500 rounded-sm"></span><span>Incorrect Responses</span></span>
-                        <span id="breakdownQtyWrongDisplayNode" class="font-bold text-red-400 text-sm">0</span>
-                    </div>
-                    <div class="flex items-center justify-between border-b border-gray-800/40 pb-1.5">
-                        <span class="flex items-center space-x-2"><span class="w-2.5 h-2.5 bg-gray-600 rounded-sm"></span><span>Skipped Elements</span></span>
-                        <span id="breakdownQtyUnattemptedDisplayNode" class="font-bold text-gray-400 text-sm">0</span>
-                    </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-gray-500">Total Structural Tasks</span>
-                        <span id="breakdownQtyTotalTasksDisplayNode" class="font-bold text-white">0</span>
-                    </div>
-                </div>
-                <div class="pt-2">
-                    <button type="button" onclick="window.print()" class="w-full bg-gray-950 border border-gray-800 hover:bg-gray-800 text-gray-300 font-bold py-3 rounded-xl transition-colors text-xs uppercase tracking-wider shadow-inner">
-                        Download Branded Evaluation PDF Report
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-xl flex items-center justify-center min-h-[260px]">
-                <div class="w-full max-w-[220px]">
-                    <canvas id="scorecardGraphicalPieAnalysisCanvasSlot"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center pt-4">
-            <a href="dashboard.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-widest px-8 py-3 rounded-xl shadow-md transition-colors">
-                Return To Portal Dashboard
+            <a href="dashboard.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-lg transition-colors shadow-md">
+                Return to Dashboard Portal
             </a>
         </div>
-    </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-10">
+        
+        <div id="securityViolationBanner" class="hidden mb-6 bg-red-950 border-2 border-red-600 rounded-2xl p-5 text-center shadow-2xl space-y-2 animate-pulse">
+            <h2 class="text-red-500 font-black text-xl tracking-wide uppercase flex items-center justify-center gap-2">
+                ⚠️ SECURE GUARD BLOCK LOCK INITIATED
+            </h2>
+            <p class="text-sm text-gray-300 font-medium">
+                Your examination session was forcefully terminated and auto-submitted because you violated secure workspace protocols (switched apps, answered an active call, dropped notification cards, or captured screen graphics).
+            </p>
+        </div>
+
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
+            
+            <div id="resultBannerHeader" class="bg-gradient-to-r from-blue-900 to-indigo-900 px-6 py-8 text-center border-b border-gray-700">
+                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Performance Summary Evaluation</h1>
+                <p id="resExamTitle" class="text-sm text-blue-200 mt-1 font-medium font-mono uppercase tracking-wide">Querying cloud ledger assets...</p>
+            </div>
+
+            <div class="p-6 sm:p-8 space-y-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-700/60 text-center space-y-1">
+                        <span class="text-xs text-gray-400 font-medium tracking-wider uppercase block">Points Secured</span>
+                        <span id="resScorePoints" class="text-xl sm:text-2xl font-black font-mono text-blue-400">0 / 0</span>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-700/60 text-center space-y-1">
+                        <span class="text-xs text-gray-400 font-medium tracking-wider uppercase block">Final Accuracy</span>
+                        <span id="resPercentage" class="text-xl sm:text-2xl font-black font-mono text-purple-400">0%</span>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-700/60 text-center space-y-1">
+                        <span class="text-xs text-gray-400 font-medium tracking-wider uppercase block">Correct Answers</span>
+                        <span id="resCorrectCount" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">0 Items</span>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-700/60 text-center space-y-1">
+                        <span class="text-xs text-gray-400 font-medium tracking-wider uppercase block">Status Verdict</span>
+                        <div id="resVerdictBadge" class="mt-1">
+                            <span class="text-xs font-extrabold tracking-wide uppercase px-2.5 py-0.5 rounded inline-block bg-gray-800 border border-gray-700 text-gray-400">Verifying</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900/30 rounded-xl p-5 border border-gray-700/60 text-sm space-y-3 font-medium">
+                    <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase border-b border-gray-700/40 pb-1.5">Examinee Identification Meta Parameters</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-300">
+                        <div>Examinee Student Full Name: <span id="resStudentName" class="text-white font-bold">Loading...</span></div>
+                        <div>Unique Admission Number: <span id="resAdmissionNumber" class="text-white font-bold font-mono text-xs">Loading...</span></div>
+                        <div>Target Classroom Stream: <span id="resStandard" class="text-white font-bold">Loading...</span></div>
+                        <div>Timestamp Completion: <span id="resTimestamp" class="text-white font-bold font-mono text-xs">Loading...</span></div>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-500 pt-2">
+                    This scorecard evaluation represents a certified response ledger finalized inside the cloud database storage array cluster matching secure operational requirements protocol parameters.
+                </div>
+            </div>
+
+        </div>
+    </main>
 
     <script type="module" src="js/firebase-config.js"></script>
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlQueryReader = new URLSearchParams(window.location.search);
-            const targetExamDocId = urlQueryReader.get('id');
-
-            // ⚡ Pull layout values directly from client-settings.js dynamically
-            const ui = window.clientPortalSettings;
-            if (ui) {
-                document.title = `${ui.instituteName} - Performance Scorecard`;
-                document.getElementById('dynamicResultLogoNode').src = ui.brandedLogoUrl;
-                document.getElementById('dynamicResultTitleNode').textContent = ui.instituteName;
-                document.getElementById('dynamicResultTaglineNode').textContent = ui.taglineText;
-            }
-
-            if (!targetExamDocId) {
-                window.location.replace("dashboard.html");
-                return;
-            }
-
-            const frameSyncThreadListener = setInterval(() => {
-                if (window.auth && window.onAuthStateChanged) {
-                    clearInterval(frameSyncThreadListener);
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            // Extract user base metadata
-                            const userMetaSnap = await window.getDoc(window.doc(window.db, "users", user.uid));
-                            if (userMetaSnap.exists()) {
-                                compileAndRenderStudentScoreReportData(userMetaSnap.data());
-                            } else { window.location.replace("login.html"); }
-                        } else { window.location.replace("login.html"); }
-                    });
-                }
-            }, 50);
-
-            async function compileAndRenderStudentScoreReportData(studentProfileMap) {
-                try {
-                    // Extract data profile matching user identifiers arrays
-                    const resultQueryRef = window.query(
-                        window.collection(window.db, "results"),
-                        window.where("examId", "==", targetExamDocId),
-                        window.where("admissionNumber", "==", studentProfileMap.admissionNumber)
-                    );
-                    const matchingResultSnapshot = await window.getDocs(resultQueryRef);
-
-                    if (matchingResultSnapshot.empty) {
-                        document.body.innerHTML = `<div class="min-h-screen bg-gray-950 flex items-center justify-center font-mono text-xs text-gray-500">No telemetry evaluation sheet matching this active validation vector exists on the cloud.</div>`;
-                        return;
-                    }
-
-                    // Extract index map data payloads
-                    const evaluationDataPayloadMap = matchingResultSnapshot.docs[0].data();
-
-                    // Render basic student header tokens layout
-                    document.getElementById('studentProfileNameDisplayNode').textContent = evaluationDataPayloadMap.studentName;
-                    document.getElementById('studentProfileAdmissionDisplayNode').textContent = evaluationDataPayloadMap.admissionNumber;
-                    document.getElementById('studentProfileStandardDisplayNode').textContent = `${evaluationDataPayloadMap.standard || '12th'}`;
-                    
-                    // Compliance tracking verification status check loops injection points
-                    const statusNodeDisplayBadge = document.getElementById('studentProfileStatusDisplayNode');
-                    if (evaluationDataPayloadMap.complianceViolationForcedOutFlag === true) {
-                        statusNodeDisplayBadge.textContent = "TERMINATED (CHEATING)";
-                        statusNodeDisplayBadge.className = "text-red-500 font-bold text-sm animate-pulse";
-                    } else {
-                        statusNodeDisplayBadge.textContent = "VERIFIED HONEST";
-                        statusNodeDisplayBadge.className = "text-green-400 font-bold text-sm";
-                    }
-
-                    // Map calendar timestamps text values logs
-                    const dateInstance = new Date(evaluationDataPayloadMap.submittedAt);
-                    document.getElementById('scorecardGenerationTimestampDisplay').textContent = dateInstance.toLocaleDateString() + " " + dateInstance.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    // Populating absolute numbers layout text metrics
-                    document.getElementById('coreMetricsPointsScoreDisplayNode').textContent = evaluationDataPayloadMap.scorePoints;
-                    document.getElementById('coreMetricsMaxPointsWeightDisplayNode').textContent = `out of ${evaluationDataPayloadMap.totalWeightMarks || 720}`;
-                    document.getElementById('coreMetricsPercentageRatioDisplayNode').textContent = `${evaluationDataPayloadMap.percentageScore || 0}%`;
-                    document.getElementById('coreMetricsAccuracyRatioDisplayNode').textContent = `${evaluationDataPayloadMap.accuracyPercentage || 0}%`;
-
-                    // Populating structural item numbers breakdown ledger mapping rows
-                    const correctCount = evaluationDataPayloadMap.correctCount || 0;
-                    const wrongCount = evaluationDataPayloadMap.wrongCount || 0;
-                    const unattemptedCount = evaluationDataPayloadMap.unattemptedCount || 0;
-                    const totalQuestions = evaluationDataPayloadMap.totalQuestions || 0;
-
-                    document.getElementById('breakdownQtyCorrectDisplayNode').textContent = correctCount;
-                    document.getElementById('breakdownQtyWrongDisplayNode').textContent = wrongCount;
-                    document.getElementById('breakdownQtyUnattemptedDisplayNode').textContent = unattemptedCount;
-                    document.getElementById('breakdownQtyTotalTasksDisplayNode').textContent = totalQuestions;
-
-                    // Initialize Chart.js circular pie chart mapping metrics loop graphics
-                    renderAnalyticalScoreChartGraphic(correctCount, wrongCount, unattemptedCount);
-
-                } catch (err) { console.error("Report construction pipeline crash: ", err); }
-            }
-
-            function renderAnalyticalScoreChartGraphic(correct, wrong, skipped) {
-                const chartCtxRefNode = document.getElementById('scorecardGraphicalPieAnalysisCanvasSlot').getContext('2d');
-                new Chart(chartCtxRefNode, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Correct', 'Wrong', 'Skipped'],
-                        datasets: [{
-                            data: [correct, wrong, skipped],
-                            backgroundColor: ['#22c55e', '#ef4444', '#4b5563'],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        plugins: { legend: { display: false } },
-                        cutout: '75%',
-                        responsive: true,
-                        maintainAspectRatio: true
-                    }
-                });
-            }
-        });
-    </script>
+    <script type="module" src="js/results.js"></script>
 </body>
 </html>

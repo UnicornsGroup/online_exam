@@ -3,183 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Login</title>
+    <title>Login - Online Exam System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="client-settings.js"></script>
+    <link rel="stylesheet" href="css/custom.css">
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen font-sans flex items-center justify-center p-4 select-none">
-
-    <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full space-y-6 shadow-2xl">
-        <div class="text-center space-y-3">
-            <img id="dynamicLoginLogoNode" src="" alt="Institute Logo" class="h-16 w-auto object-contain mx-auto">
-            <div>
-                <h2 id="dynamicLoginTitleNode" class="text-xl font-black text-white uppercase tracking-tight">Loading Portal...</h2>
-                <p id="dynamicLoginTaglineNode" class="text-xs text-gray-400 font-mono mt-1"></p>
-            </div>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+        <!-- Logo Display Section -->
+        <div class="text-center mb-8">
+            <img src="assets/logo/logo.png" alt="Coaching Logo" class="mx-auto h-24 w-auto object-contain mb-4" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
+            <h2 class="text-2xl font-bold text-white tracking-tight">Suraj English Academy</h2>
+            <p class="text-gray-400 text-sm mt-1">Examination Assessment Portal</p>
         </div>
 
-        <form id="loginForm" class="space-y-4">
+        <!-- Alert Notification Panel -->
+        <div id="errorAlert" class="hidden bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6 text-sm" role="alert">
+            <span id="errorMessage">Invalid Credentials.</span>
+        </div>
+
+        <!-- Credentials Submission Form -->
+        <form id="loginForm" class="space-y-6">
             <div>
-                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Email Address / Admission No</label>
-                <input type="text" id="username" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
-            </div>
-            <div>
-                <label class="block text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-1">Secret Password</label>
-                <input type="password" id="password" required class="w-full bg-gray-950 border border-gray-800 p-3 rounded-xl text-sm focus:border-blue-500 focus:outline-none font-semibold text-white">
-            </div>
-            
-            <div id="errorAlert" class="hidden bg-red-950/40 border border-red-900/60 p-3 rounded-xl text-xs text-red-400 font-mono">
-                <span id="errorMessage"></span>
+                <label class="block text-gray-300 text-sm font-medium mb-2" for="username">Admission Number / Username</label>
+                <input type="text" id="username" required placeholder="e.g., SEA20260002" 
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transition-all flex items-center justify-center space-x-2">
-                <span id="btnSpinner" class="hidden animate-spin rounded-full h-4 w-4 border-2 border-t-transparent border-white"></span>
+            <div>
+                <label class="block text-gray-300 text-sm font-medium mb-2" for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••" 
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 flex justify-center items-center">
                 <span id="btnText">Sign In Securely</span>
+                <div id="btnSpinner" class="hidden animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white ml-2"></div>
             </button>
         </form>
     </div>
 
+    <!-- Core Runtime Dependencies -->
     <script type="module" src="js/firebase-config.js"></script>
-    
-    <script type="module">
-        window.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('loginForm');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            const errorAlert = document.getElementById('errorAlert');
-            const errorMessage = document.getElementById('errorMessage');
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const btnSpinner = document.getElementById('btnSpinner');
-
-            const ui = window.clientPortalSettings;
-            
-            // ⚡ Dynamic Branding Injection
-            if (ui) {
-                document.title = `${ui.instituteName} - Secure Login`;
-                document.getElementById('dynamicLoginLogoNode').src = ui.brandedLogoUrl;
-                document.getElementById('dynamicLoginTitleNode').textContent = ui.instituteName;
-                document.getElementById('dynamicLoginTaglineNode').textContent = ui.taglineText;
-                
-                submitBtn.className = `w-full bg-gradient-to-r from-${ui.accentColorClass} to-${ui.hoverColorClass} text-white font-extrabold py-3.5 rounded-xl shadow-lg uppercase text-xs tracking-wider transform transition-all active:scale-[0.99] flex items-center justify-center space-x-2`;
-            }
-
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorAlert.classList.remove('hidden');
-                submitBtn.disabled = false;
-                btnText.textContent = "Sign In Securely";
-                btnSpinner.classList.add('hidden');
-            }
-
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                errorAlert.classList.add('hidden');
-                submitBtn.disabled = true;
-                btnText.textContent = "Authenticating...";
-                btnSpinner.classList.remove('hidden');
-
-                const rawUsername = usernameInput.value.trim().toUpperCase();
-                const password = passwordInput.value.trim();
-
-                if (!rawUsername || !password) {
-                    showError("Please enter both admission number and password.");
-                    return;
-                }
-
-                const targetSuffix = (ui && ui.emailDomainSuffix) ? ui.emailDomainSuffix : "portal.com";
-                const derivedEmail = `${rawUsername}@${targetSuffix}`;
-
-                // ⚡ Robust, instant checking loop that safely breaks immediately upon finding objects
-                const executeLogin = setInterval(async () => {
-                    if (window.auth && (window.signInWithEmailAndPassword || window.auth.service || true)) {
-                        clearInterval(executeLogin);
-
-                        try {
-                            const userCredential = await window.signInWithEmailAndPassword(window.auth, derivedEmail, password);
-                            await routeAuthenticatedUser(userCredential.user.uid);
-                        } catch (error) {
-                            console.log("Initial Auth Failure Code:", error.code);
-                            if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-                                await attemptLazyAuthenticationProvisioning(rawUsername, derivedEmail, password);
-                            } else if (error.code === "auth/network-request-failed") {
-                                showError("Network connection fault. Check your internet access.");
-                            } else {
-                                showError("Invalid admission number or password validation error.");
-                            }
-                        }
-                    }
-                }, 50);
-            });
-
-            async function attemptLazyAuthenticationProvisioning(username, email, password) {
-                try {
-                    const fallbackDocId = username + "_UID";
-                    
-                    let userDocRef = window.doc(window.db, "users", fallbackDocId);
-                    let userDocSnapshot = await window.getDoc(userDocRef);
-
-                    if (!userDocSnapshot.exists()) {
-                        userDocRef = window.doc(window.db, "users", username);
-                        userDocSnapshot = await window.getDoc(userDocRef);
-                    }
-
-                    if (userDocSnapshot.exists()) {
-                        const userData = userDocSnapshot.data();
-
-                        if (password.toUpperCase() === username) {
-                            btnText.textContent = "Creating Safe Connection...";
-                            
-                            const newAuthCredential = await window.createUserWithEmailAndPassword(window.auth, email, password);
-                            
-                            await window.setDoc(window.doc(window.db, "users", newAuthCredential.user.uid), {
-                                admissionNumber: userData.admissionNumber.trim().toUpperCase(),
-                                studentName: userData.studentName.trim(),
-                                standard: userData.standard.trim(),
-                                role: "STUDENT",
-                                email: email,
-                                mobileNumber: userData.mobileNumber ? userData.mobileNumber.toString().trim() : "0000000000"
-                            });
-                            
-                            try {
-                                await window.deleteDoc(userDocRef);
-                            } catch(clearErr) { console.log("Holding cache doc cleanup skipped."); }
-
-                            window.location.replace("dashboard.html");
-                        } else {
-                            showError("Invalid password typed for this registered admission profile.");
-                        }
-                    } else {
-                        const fallbackQuery = window.query(window.collection(window.db, "users"), window.where("admissionNumber", "==", username));
-                        const fallbackSnapshot = await window.getDocs(fallbackQuery);
-                        
-                        if (!fallbackSnapshot.empty) {
-                            showError("Incorrect password. Type your absolute admission number clearly.");
-                        } else {
-                            showError("Admission Number '" + username + "' not found in the institution database.");
-                        }
-                    }
-                } catch (provisionError) {
-                    console.error("Provisioning engine pipeline error:", provisionError);
-                    showError("Authentication gate timeout issue. Try checking your login fields.");
-                }
-            }
-
-            async function routeAuthenticatedUser(uid) {
-                const userDoc = await window.getDoc(window.doc(window.db, "users", uid));
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    if (userData.role === "ADMIN") {
-                        window.location.replace("admin/admin-dashboard.html");
-                    } else {
-                        window.location.replace("dashboard.html");
-                    }
-                } else {
-                    showError("Profile database configuration record missing for this ID.");
-                }
-            }
-        });
-    </script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>
