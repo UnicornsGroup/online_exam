@@ -6,6 +6,8 @@ const firebaseConfig = {
   apiKey: "AIzaSyCmh1IgoP5OJaILVIEu98vHRDIDWM1ltMA",
   authDomain: "demoexam-e6780.firebaseapp.com",
   projectId: "demoexam-e6780",
+  storageBucket: "demoexam-e6780.firebasestorage.app",
+  messagingSenderId: "504643921191",
   appId: "1:504643921191:web:045ca36481aa7c622cb502"
 };
 
