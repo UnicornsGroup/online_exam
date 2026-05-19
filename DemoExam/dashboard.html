@@ -68,7 +68,7 @@
     <script type="module" src="js/dashboard.js"></script>
     <script type="module">
         window.addEventListener('DOMContentLoaded', () => {
-            // --- ⚡ Dynamic Branding & Accent Configurations Sheet Mapping ---
+            // --- ⚡ Pull values directly from client-settings.js dynamically ---
             const config = window.clientPortalSettings;
             if (config) {
                 document.title = `${config.instituteName} - Student Dashboard`;
@@ -122,7 +122,7 @@
             function mountLiveExamsListener(standardStream, admissionNumber) {
                 const examsContainer = document.getElementById('activeExamsContainer');
                 
-                // 🗲 CRITICAL SECURITY LOOP REPAIR: Filter exams collection using 'array-contains'
+                // 🗲 Filter exams collection using 'array-contains'
                 const examsQuery = window.query(
                     window.collection(window.db, "exams"),
                     window.where("standards", "array-contains", standardStream)
@@ -145,8 +145,8 @@
                         const timeNow = Date.now();
 
                         // Process Assessment Activity Windows Mappings
-                        const isWindowOpen = timeNow >= exam.startTimestamp && timeNow <= exam.endTimestamp;
-                        const hasEnded = timeNow > exam.endTimestamp;
+                        const isWindowOpen = timeNow >= exam.startTimestamp && (exam.endTimestamp ? timeNow <= exam.endTimestamp : true);
+                        const hasEnded = exam.endTimestamp ? timeNow > exam.endTimestamp : false;
 
                         let statusBadgeHtml = '';
                         let primaryButtonHtml = '';
@@ -232,8 +232,8 @@
             // --- 🚀 Secure Examination Execution Launcher Window Routing ---
             window.launchSecureExamWindow = function(examId) {
                 if (confirm("Initialize examination sequence? Timer rules trigger on initialization canvas lock.")) {
-                    // Routes straight to your interactive question assessment viewport file
-                    window.location.href = `take-exam.html?id=${examId}`;
+                    // 🗲 CRITICAL ROUTING REPAIR FIX: Changed targeting from 'take-exam.html' to match your actual file layout asset 'exam.html'
+                    window.location.href = `exam.html?id=${examId}`;
                 }
             };
 
