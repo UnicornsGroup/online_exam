@@ -201,12 +201,18 @@
                     clearInterval(checkSessionLock);
                     window.onAuthStateChanged(window.auth, async (user) => {
                         if (user) {
-                            const adminCheckDoc = await window.getDoc(window.doc(window.db, "users", user.uid));
-                            if (!adminCheckDoc.exists() || adminCheckDoc.data().role !== "ADMIN") {
+                            try {
+                                const adminCheckDoc = await window.getDoc(window.doc(window.db, "users", user.uid));
+                                if (!adminCheckDoc.exists() || adminCheckDoc.data().role !== "ADMIN") {
+                                    window.location.replace("../login.html");
+                                } else {
+                                    // ⚡ CRITICAL REPAIR FLOW FIX: Mount dependencies ONLY after explicit verification is complete
+                                    initializeQuillEditorCanvas();
+                                    mountLiveExamsInventoryListener();
+                                }
+                            } catch (securityHandshakeError) {
+                                console.error("Database initialization clearance stalled:", securityHandshakeError);
                                 window.location.replace("../login.html");
-                            } else {
-                                initializeQuillEditorCanvas();
-                                mountLiveExamsInventoryListener();
                             }
                         } else {
                             window.location.replace("../login.html");
@@ -485,7 +491,7 @@
                 const targetDocId = evt.target.getAttribute('data-id');
                 if (confirm("Are you sure you want to permanently erase this published assessment and delete all student questions parameters logs?")) {
                     try {
-                        await window.deleteDoc(window.doc(window.db, "exams", targetDocId));
+                        await window.deleteDoc(window.doc(window.doc(window.db, "exams", targetDocId)));
                         alert("Examination record wiped from live repositories index.");
                         resetAssessmentBuilderWorkspaceState();
                     } catch(err) { console.error(err); }
