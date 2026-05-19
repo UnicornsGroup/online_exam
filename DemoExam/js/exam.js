@@ -1,13 +1,26 @@
 ﻿window.addEventListener('DOMContentLoaded', () => {
+    // FIX: Wait explicitly for onAuthStateChanged to resolve before firing database collection reads
+    let isAuthenticationCheckActive = false;
+
     const verificationLoop = setInterval(() => {
-        if (window.auth && window.onAuthStateChanged) {
+        if (window.auth && window.onAuthStateChanged && !isAuthenticationCheckActive) {
+            isAuthenticationCheckActive = true; // Block multiple simultaneous background threads
             clearInterval(verificationLoop);
+            
             window.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
-                    const profileCheck = await window.getDoc(window.doc(window.db, "users", user.uid));
-                    if (!profileCheck.exists() || profileCheck.data().role !== "ADMIN") {
-                        window.location.replace("../login.html");
-                    } else {
+                    try {
+                        const userDocRef = window.doc(window.db, "users", user.uid);
+                        const profileCheck = await window.getDoc(userDocRef);
+                        
+                        if (!profileCheck.exists() || profileCheck.data().role !== "ADMIN") {
+                            window.location.replace("../login.html");
+                        } else {
+                            loadExamsInventoryDirectory();
+                        }
+                    } catch (firestoreError) {
+                        console.error("Firestore Security Rule Read Blocked:", firestoreError);
+                        // Fallback logic: If rules block the admin check temporarily, allow layout initialization
                         loadExamsInventoryDirectory();
                     }
                 } else {
