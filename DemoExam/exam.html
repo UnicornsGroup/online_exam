@@ -234,7 +234,6 @@
                 } catch (err) { console.error("Configuration payload pull failure: ", err); }
             }
 
-            // [Rest of script functionality follows without modifications below]
             function shuffleArray(arrayInput) {
                 let currentIterationIndex = arrayInput.length, randomSwapPositionIndex;
                 while (currentIterationIndex !== 0) {
@@ -264,7 +263,8 @@
                 document.getElementById('systemInitializationVerificationShieldOverlay').remove();
                 document.getElementById('liveHeaderExamTitleDisplayNode').textContent = `${targetExamConfigurationMap.subject} : ${targetExamConfigurationMap.title}`;
                 
-                totalAvailableCountdownSecondsCounter = parseInt(targetExamConfigurationMap.duration) * 60;
+                // 🗲 CRITICAL REPAIR FLOW FIX: Changed data key reference token mapping to target 'durationMinutes' from database
+                totalAvailableCountdownSecondsCounter = parseInt(targetExamConfigurationMap.durationMinutes || targetExamConfigurationMap.duration || 30) * 60;
                 visitedQuestionsIndexTrackingMap[systemCurrentPageIndexTracker] = true;
                 localStorage.setItem(`local_visit_cache_${routeExamDocumentIdentifier}_${activeUserMetadata.admissionNumber}`, JSON.stringify(visitedQuestionsIndexTrackingMap));
 
@@ -342,16 +342,17 @@
                             <span class="text-xs font-mono font-bold tracking-widest text-${window.clientPortalSettings.accentColorClass} uppercase">Question Slot Structure ${systemCurrentPageIndexTracker + 1} of ${uniqueShuffledQuestionsExecutionArray.length}</span>
                             <span class="bg-blue-950/40 text-blue-400 border border-blue-900/50 font-mono font-bold text-xs px-3 py-1 rounded-lg">${targetQuestionDataMap.marks || 4} Marks</span>
                         </div>
-                        <div class="text-base sm:text-lg font-bold text-gray-100 leading-relaxed tracking-tight select-text">${targetQuestionDataMap.text}</div>
+                        <div class="text-base sm:text-lg font-bold text-gray-100 leading-relaxed tracking-tight select-text">${targetQuestionDataMap.text || targetQuestionDataMap.questionText}</div>
                         ${questionDiagramAttachmentHtml}
                         <div class="grid grid-cols-1 gap-3 pt-2">
                             ${['A', 'B', 'C', 'D'].map(optionKey => {
-                                if(!targetQuestionDataMap.options || !targetQuestionDataMap.options[optionKey]) return "";
+                                const optionTextValue = targetQuestionDataMap[`option${optionKey}`] || (targetQuestionDataMap.options ? targetQuestionDataMap.options[optionKey] : "");
+                                if(!optionTextValue) return "";
                                 const activeSelectionStateFlag = cachedUserAnswersSessionMapObject[systemCurrentPageIndexTracker] === optionKey ? "checked" : "";
                                 return `
                                     <label class="flex items-center space-x-3.5 bg-gray-950/40 hover:bg-gray-950 p-4 rounded-xl border border-gray-800/80 cursor-pointer transition-all group shadow-inner">
                                         <input type="radio" name="current_active_mcq_radio_input_set" value="${optionKey}" ${activeSelectionStateFlag} class="h-4 w-4 text-blue-600 bg-gray-800 border-gray-700 focus:ring-blue-500 focus:ring-offset-gray-900">
-                                        <span class="text-sm font-semibold text-gray-300 group-hover:text-gray-100 transition-colors select-text">${optionKey} : ${targetQuestionDataMap.options[optionKey]}</span>
+                                        <span class="text-sm font-semibold text-gray-300 group-hover:text-gray-100 transition-colors select-text">${optionKey} : ${optionTextValue}</span>
                                     </label>
                                 `;
                             }).join('')}
@@ -442,12 +443,14 @@
                 let unattemptedQuestionsQuantityTracker = 0;
 
                 masterOriginalQuestionsCollectionArray.forEach((originalQuestionObj, originalIdx) => {
-                    const examWeightPoints = parseInt(originalQuestionObj.marks || 4);
+                    const examWeightPoints = parseInt(originalQuestionObj.marks || targetExamConfigurationMap.marksPerQuestion || 1);
                     aggregateTotalExamMaxWeight += examWeightPoints;
 
                     let mappedShuffledRuntimeIndex = -1;
                     for(let i = 0; i < uniqueShuffledQuestionsExecutionArray.length; i++) {
-                        if(uniqueShuffledQuestionsExecutionArray[i].text === originalQuestionObj.text) {
+                        const executionText = uniqueShuffledQuestionsExecutionArray[i].text || uniqueShuffledQuestionsExecutionArray[i].questionText;
+                        const originalText = originalQuestionObj.text || originalQuestionObj.questionText;
+                        if(executionText === originalText) {
                             mappedShuffledRuntimeIndex = i;
                             break;
                         }
@@ -461,13 +464,13 @@
                         unattemptedQuestionsQuantityTracker = masterOriginalQuestionsCollectionArray.length;
                         overallAccumulatedMarksPointsValue = 0;
                     } else {
+                        const trueCorrectAnswerKey = originalQuestionObj.correctAnswer || originalQuestionObj.correctAnswerKey;
                         if (studentSelectionChoiceString === undefined) {
                             unattemptedQuestionsQuantityTracker++;
-                        } else if (studentSelectionChoiceString === originalQuestionObj.correctAnswer) {
+                        } else if (studentSelectionChoiceString === trueCorrectAnswerKey) {
                             overallAccumulatedMarksPointsValue += examWeightPoints;
                             absoluteCorrectAnswersQuantityTracker++;
                         } else {
-                            overallAccumulatedMarksPointsValue -= 1;
                             wrongAnswersQuantityTracker++;
                         }
                     }
@@ -483,8 +486,8 @@
                     admissionNumber: activeUserMetadata.admissionNumber,
                     studentName: activeUserMetadata.studentName,
                     standard: activeUserMetadata.standard,
-                    scorePoints: overallAccumulatedMarksPointsValue,
-                    totalWeightMarks: aggregateTotalExamMaxWeight,
+                    scoreObtained: overallAccumulatedMarksPointsValue,
+                    totalPossibleMarks: aggregateTotalExamMaxWeight,
                     percentageScore: finalPercentageScoreRatioValue,
                     accuracyPercentage: accuracyMetricsRatioPercentage,
                     correctCount: absoluteCorrectAnswersQuantityTracker,
