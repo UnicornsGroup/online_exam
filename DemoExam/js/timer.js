@@ -271,9 +271,14 @@
             if(idx === organizedGlobalQuestions.length - 1) {
                 nBtn.textContent = "View Questionnaire Summary";
                 sBtn.textContent = "Save Response Final ✓";
-                nBtn.addEventListener('click', () => alert("Use the right-side palette to review answers, or click the Submit button to finalize score charts."));
+                
+                // FIXED: Replaced native alerts with custom safe alerts to prevent full-screen exit violations
+                nBtn.addEventListener('click', () => {
+                    showSafeExamSystemModal("Use the right-side palette to review answers, or click the Submit button to finalize score charts.");
+                });
+                
                 sBtn.addEventListener('click', () => {
-                    alert("Response verified! Click 'Submit Examination' inside the right-side grid panel to upload files.");
+                    showSafeExamSystemModal("Response verified! Click 'Submit Examination' inside the right-side grid panel to upload files.");
                 });
             } else {
                 nBtn.addEventListener('click', () => switchActiveQuestionDisplayViewport(currentQuestionPointerIndex + 1));
