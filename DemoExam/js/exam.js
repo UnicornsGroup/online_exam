@@ -150,7 +150,7 @@
         } catch(err) { console.error(err); }
     }
 
-    // High-Resolution Branded Question Paper Core Compilation Download Engine
+    // High-Resolution Branded Question Paper PDF Download via Clean Window Spawning
     async function compileBrandedDocumentForPDFDownload(e) {
         const targetExamId = e.target.getAttribute('data-id');
         const actionButton = e.target;
@@ -171,74 +171,89 @@
             }
 
             actionButton.disabled = true;
-            actionButton.textContent = "Compiling Layout...";
+            actionButton.textContent = "Opening Document...";
 
-            const mainDashboardLayoutNode = document.getElementById('adminPortalMainLayoutWrapper');
-            const printDomWorkspaceNode = document.getElementById('offlinePrintPaperWorkspace');
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
-            let printLayoutHTML = `
-                <div class="pdf-document-matrix" style="background: #ffffff !important; color: #000000 !important; padding: 20px; width: 100%; box-sizing: border-box;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
-                        <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
-                        <div style="width: 82%; text-align: right;">
-                            <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
-                            <p style="font-size: 11px; color: #374151; margin: 2px 0 0 0; line-height: 1.4; font-family: sans-serif;">
-                                Address: 262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001<br>
-                                Website: <b>www.surajenglishacademy.in</b> | Mobile: +91 94273 92046 | WhatsApp: +91 89801 90101
-                            </p>
+            // Build the clean paper markup string
+            let paperMarkup = `
+                <html>
+                <head>
+                    <title>${examData.title.replace(/\s+/g, '_')}_Question_Paper</title>
+                    <style>
+                        body { background: #ffffff !important; color: #000000 !important; font-family: "Times New Roman", Times, serif !important; padding: 20px; margin: 0; }
+                        .paper-matrix { width: 100%; max-width: 800px; margin: 0 auto; }
+                        .meta-row { display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; }
+                        .question-node { margin-bottom: 20px; page-break-inside: avoid; }
+                        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-left: 20px; margin-top: 6px; font-size: 14px; }
+                        @media print {
+                            body { padding: 0; margin: 0; }
+                            .question-node { page-break-inside: avoid !important; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="paper-matrix">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                            <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
+                            <div style="width: 82%; text-align: right;">
+                                <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
+                                <p style="font-size: 11px; color: #374151; margin: 2px 0 0 0; line-height: 1.4; font-family: sans-serif;">
+                                    Address: 262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001<br>
+                                    Website: <b>www.surajenglishacademy.in</b> | Mobile: +91 94273 92046 | WhatsApp: +91 89801 90101
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; color: #000; letter-spacing: 0.5px;">
-                        ${examData.title}
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; color: #000000;">
-                        <div>Subject: ${examData.subject}</div>
-                        <div>Standard: ${collectionStandardsLabel}</div>
-                    </div>
+                        <div style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; letter-spacing: 0.5px;">
+                            ${examData.title}
+                        </div>
+                        
+                        <div class="meta-row">
+                            <div>Subject: ${examData.subject}</div>
+                            <div>Standard: ${collectionStandardsLabel}</div>
+                        </div>
 
-                    <div style="display: flex; justify-content: space-between; margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px; font-weight: bold; color: #000000;">
-                        <div>Duration: ${examData.duration} Minutes</div>
-                        <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
-                    </div>
+                        <div class="meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
+                            <div>Duration: ${examData.duration} Minutes</div>
+                            <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
+                        </div>
 
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px; color: #000;">
-                        <div>Student Full Name: ________________________________________________</div>
-                        <div>Roll Number: ____________________</div>
-                    </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px;">
+                            <div>Student Full Name: ________________________________________________</div>
+                            <div>Roll Number: ____________________</div>
+                        </div>
 
-                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000;">
-                        Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
-                    </div>
+                        <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px;">
+                            Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
+                        </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
             `;
 
             compiledQuestions.forEach((q, index) => {
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
-                printLayoutHTML += `
-                    <div class="pdf-question-node">
-                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000;">
+                paperMarkup += `
+                    <div class="question-node">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
                             </div>
-                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace; color: #000;">[${q.marks} Mark(s)]</div>
+                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace;">[${q.marks} Mark(s)]</div>
                         </div>
                 `;
 
                 if (q.qImgData || q.qImg) {
-                    printLayoutHTML += `
+                    paperMarkup += `
                         <div style="margin: 8px 0 8px 25px;">
                             <img src="${q.qImgData || q.qImg}" style="max-height: 150px; width: auto; border: 1px solid #000000; padding: 1px;">
                         </div>
                     `;
                 }
 
-                printLayoutHTML += `
-                        <div class="pdf-options-grid">
+                paperMarkup += `
+                        <div class="options-grid">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -248,33 +263,28 @@
                 `;
             });
 
-            printLayoutHTML += `
+            paperMarkup += `
+                        </div>
+                        <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; letter-spacing: 1px;">
+                            --- Best Of Luck ---
+                        </div>
                     </div>
-                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; color: #000; letter-spacing: 1px;">
-                        --- Best Of Luck ---
-                    </div>
-                </div>
+                </body>
+                </html>
             `;
 
-            // CRITICAL FIX: Direct DOM swapping avoids html2canvas engine parsing vulnerabilities entirely
-            const standardPageStateBackup = mainDashboardLayoutNode.innerHTML;
-            
-            // Swap live view state to the crisp printable template sheet
-            mainDashboardLayoutNode.style.display = 'none';
-            printDomWorkspaceNode.innerHTML = printLayoutHTML;
-            printDomWorkspaceNode.style.display = 'block';
+            // SPAWN AN ISOLATED BLANK WINDOW CONTEXT
+            const pdfWindow = window.open('', '_blank');
+            pdfWindow.document.write(paperMarkup);
+            pdfWindow.document.close();
 
-            // Trigger system hardware thread execution directly
-            window.print();
-
-            // Revert layout configurations seamlessly after print or PDF export completion
-            printDomWorkspaceNode.style.display = 'none';
-            printDomWorkspaceNode.innerHTML = '';
-            mainDashboardLayoutNode.style.display = 'block';
+            // Fire print dialog immediately on the fresh window setup
+            pdfWindow.focus();
+            pdfWindow.print();
 
         } catch (printErr) {
             console.error("PDF download failure:", printErr);
-            alert("Error running the automated download engine.");
+            alert("Error spawning printable target workspace.");
         } finally {
             actionButton.disabled = false;
             actionButton.textContent = "Download PDF";
