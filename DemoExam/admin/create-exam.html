@@ -15,6 +15,29 @@
         .ql-snow .ql-stroke { stroke: #d1d5db !important; }
         .ql-snow .ql-fill { fill: #d1d5db !important; }
         .ql-snow .ql-picker { color: #d1d5db !important; }
+
+        /* Hardened CSS Native Printing Overrides Engine */
+        @media print {
+            body, html, main { 
+                background-color: #ffffff !important; 
+                color: #000000 !important; 
+                font-family: "Times New Roman", Times, serif !important;
+            }
+            header, button, nav, form, .xl:col-span-1, #bulkImportCardContainer, .bg-gradient-to-r, footer, th:last-child, td:last-child { 
+                display: none !important; 
+            }
+            #offlinePrintPaperWorkspace { 
+                display: block !important; 
+                color: #000000 !important; 
+                padding: 10px !important;
+            }
+            .print-paper-matrix { display: block !important; }
+            .print-header-title { font-size: 26px !important; font-weight: bold !important; text-transform: uppercase !important; text-align: center !important; margin-bottom: 4px !important; }
+            .print-meta-row { display: flex !important; justify-content: space-between !important; border-bottom: 2px solid #000000 !important; margin-bottom: 12px !important; padding-bottom: 4px !important; font-size: 14px !important; font-weight: bold !important; }
+            .print-question-node { margin-bottom: 18px !important; page-break-inside: avoid !important; }
+            .print-options-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-left: 20px !important; margin-top: 6px !important; font-size: 14px !important; }
+        }
+        #offlinePrintPaperWorkspace { display: none; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
@@ -195,6 +218,8 @@
             </div>
         </div>
     </main>
+
+    <div id="offlinePrintPaperWorkspace"></div>
 
     <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 border-t border-gray-800/60 mt-12 text-center">
         <p class="text-xs font-medium text-gray-600 font-mono tracking-wide select-none pointer-events-none">

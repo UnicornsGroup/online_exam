@@ -116,7 +116,7 @@
             examsInventoryTableBodyOutlet.innerHTML = "";
             
             if(snap.empty) {
-                options.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active exam schemas registered yet.</td></tr>`;
+                examsInventoryTableBodyOutlet.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active exam schemas registered yet.</td></tr>`;
                 return;
             }
 
@@ -131,8 +131,9 @@
                     <td class="py-3.5 px-2 text-gray-300 font-medium">${stdListString}</td>
                     <td class="py-3.5 px-2 font-mono text-gray-400">${data.duration} Mins (Neg: -${negVal})</td>
                     <td class="py-3.5 px-2 font-mono text-emerald-400 font-bold">${data.totalMarks} M</td>
-                    <td class="py-3.5 px-2 text-right">
+                    <td class="py-3.5 px-2 text-right space-x-2">
                         <button class="load-exam-edit-btn bg-blue-900/50 hover:bg-blue-800 border border-blue-700/50 px-3 py-1 rounded text-xs font-bold text-blue-200" data-id="${doc.id}">Edit / Modify</button>
+                        <button class="generate-print-sheet-btn bg-emerald-900/50 hover:bg-emerald-800 border border-emerald-700/50 px-3 py-1 rounded text-xs font-bold text-emerald-200 transition-colors" data-id="${doc.id}">Print Paper</button>
                     </td>
                 `;
                 examsInventoryTableBodyOutlet.appendChild(tr);
@@ -142,7 +143,112 @@
                 btn.addEventListener('click', enterExamEditConfigurationMode);
             });
 
+            document.querySelectorAll('.generate-print-sheet-btn').forEach(btn => {
+                btn.addEventListener('click', compileBrandedDocumentForPrintJob);
+            });
+
         } catch(err) { console.error(err); }
+    }
+
+    // High-Resolution Branded Question Paper Print Compilation Engine
+    async function compileBrandedDocumentForPrintJob(e) {
+        const targetExamId = e.target.getAttribute('data-id');
+        try {
+            const targetDocSnap = await window.getDoc(window.doc(window.db, "exams", targetExamId));
+            if(!targetDocSnap.exists()) {
+                alert("Error: Target examination record could not be found.");
+                return;
+            }
+
+            const examData = targetDocSnap.data();
+            const compiledQuestions = examData.questions || [];
+
+            if(compiledQuestions.length === 0) {
+                alert("This examination schema configuration holds zero item questionnaires to print.");
+                return;
+            }
+
+            const printDomWorkspaceNode = document.getElementById('offlinePrintPaperWorkspace');
+            const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
+            
+            let printLayoutHTML = `
+                <div class="print-paper-matrix">
+                    <div class="print-header-title">${examData.title}</div>
+                    <div style="text-align: center; font-size: 13px; font-weight: 600; margin-bottom: 12px; letter-spacing: 0.5px; color: #444; text-transform: uppercase;">
+                        Official Assessment Questionnaire Sheet &bull; Institute Portal License
+                    </div>
+                    
+                    <div class="print-meta-row">
+                        <div>Subject Matter: ${examData.subject}</div>
+                        <div>Target Allocation: ${collectionStandardsLabel}</div>
+                    </div>
+
+                    <div class="print-meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
+                        <div>Duration Window: ${examData.duration} Minutes</div>
+                        <div>Total Maximum Evaluation: ${examData.totalMarks} Marks</div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px;">
+                        <div>Student Full Name: ________________________________________________</div>
+                        <div>Roll Number: ____________________</div>
+                    </div>
+
+                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px;">
+                        Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+            `;
+
+            compiledQuestions.forEach((q, index) => {
+                // Clear out dynamic web text tags like paragraphs or linebreaks from editors to print natively onto standard sheets
+                const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
+
+                printLayoutHTML += `
+                    <div class="print-question-node">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4;">
+                            <div style="max-width: 85%;">
+                                <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
+                            </div>
+                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace;">[${q.marks} Mark(s)]</div>
+                        </div>
+                `;
+
+                // Render integrated diagram strings if present inside database arrays
+                if (q.qImgData || q.qImg) {
+                    printLayoutHTML += `
+                        <div style="margin: 8px 0 8px 25px;">
+                            <img src="${q.qImgData || q.qImg}" style="max-height: 150px; width: auto; border: 1px solid #000000; padding: 1px;">
+                        </div>
+                    `;
+                }
+
+                printLayoutHTML += `
+                        <div class="print-options-grid">
+                            <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
+                            <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
+                            <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
+                            <div><strong>(D)</strong> ${q.options?.D || q.optD || ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            printLayoutHTML += `
+                    </div>
+                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; letter-spacing: 1px;">
+                        --- End of Evaluation Questionnaire Registry Record ---
+                    </div>
+                </div>
+            `;
+
+            printDomWorkspaceNode.innerHTML = printLayoutHTML;
+            window.print();
+
+        } catch (printErr) {
+            console.error("Print mapping compilation failed:", printErr);
+            alert("Error running the printable document schema conversion engine.");
+        }
     }
 
     async function enterExamEditConfigurationMode(e) {
@@ -275,7 +381,6 @@
         const questionPayloadNode = {
             id: activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].id : ("Q_" + Date.now() + "_" + Math.floor(Math.random() * 1000)),
             text: richHTMLQuestionTextContent,
-            // Retain pre-existing asset string configurations if no fresh file stream is uploaded during modifications
             qImgData: base64QImg || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].qImgData : ""), 
             options: { A: optA.value.trim(), B: optB.value.trim(), C: optC.value.trim(), D: optD.value.trim() },
             optImagesData: { 
@@ -289,12 +394,10 @@
         };
 
         if (activeEditingQuestionIndex > -1) {
-            // Overwrite item payload data at the specific active editing index block pointer position
             localQuestionStack[activeEditingQuestionIndex] = questionPayloadNode;
-            activeEditingQuestionIndex = -1; // Clear editing pipeline tracking variable
+            activeEditingQuestionIndex = -1; 
             submitBtn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors";
         } else {
-            // Append fresh data matrix node straight onto compiled runtime data structure array
             localQuestionStack.push(questionPayloadNode);
         }
 
@@ -349,14 +452,12 @@
             questionsPreviewList.appendChild(div);
         });
 
-        // Bind Question Modification Listener Hooks
         document.querySelectorAll('.edit-stack-btn').forEach(btn => {
             btn.addEventListener('click', (ev) => {
                 const indexTargetPointer = parseInt(ev.target.getAttribute('data-idx'));
                 activeEditingQuestionIndex = indexTargetPointer;
                 const targetedNodeStructure = localQuestionStack[indexTargetPointer];
 
-                // Load database values back up into front-end visual workspace containers
                 quillRichEditorInstance.clipboard.dangerouslyPasteHTML(targetedNodeStructure.text);
                 optA.value = targetedNodeStructure.options.A;
                 optB.value = targetedNodeStructure.options.B;
@@ -365,21 +466,18 @@
                 correctOpt.value = targetedNodeStructure.correct;
                 qMarks.value = targetedNodeStructure.marks;
 
-                // Clear input element cached stream references during initial editing steps
                 if(uploadQImgFile) uploadQImgFile.value = "";
                 if(uploadOptAImgFile) uploadOptAImgFile.value = "";
                 if(uploadOptBImgFile) uploadOptBImgFile.value = "";
                 if(uploadOptCImgFile) uploadOptCImgFile.value = "";
                 if(uploadOptDImgFile) uploadOptDImgFile.value = "";
 
-                // Shift Submit Button configuration layout parameters to show modification state
                 const submitBtn = questionForm.querySelector('button[type="submit"]');
                 if(submitBtn) {
                     submitBtn.textContent = `Update Question #${indexTargetPointer + 1} ✓`;
                     submitBtn.className = "w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-md";
                 }
 
-                // Smooth viewport scrolling up to manual form constructor matrix block
                 questionForm.scrollIntoView({ behavior: 'smooth' });
             });
         });
@@ -387,7 +485,6 @@
         document.querySelectorAll('.remove-stack-btn').forEach(btn => {
             btn.addEventListener('click', (ev) => {
                 const targetRemovalIndex = parseInt(ev.target.getAttribute('data-idx'));
-                // Safely handle resetting active modification indexes if editing target row gets deleted
                 if (activeEditingQuestionIndex === targetRemovalIndex) {
                     activeEditingQuestionIndex = -1;
                     const submitBtn = questionForm.querySelector('button[type="submit"]');
@@ -448,7 +545,6 @@
 
         try {
             if(activeDocId) {
-                // FIXED: Resolved duplicate window.doc nested wrapper references to map direct to correct target path string structures
                 const distinctRefTargetLocation = window.doc(window.db, "exams", activeDocId);
                 await window.updateDoc(distinctRefTargetLocation, examPayloadSchema);
                 alert("Success! The existing examination profile has been updated live inside the database.");
