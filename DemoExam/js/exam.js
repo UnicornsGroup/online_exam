@@ -150,7 +150,7 @@
         } catch(err) { console.error(err); }
     }
 
-    // High-Resolution Branded Question Paper PDF Download via Clean Window Spawning
+    // High-Resolution Branded Question Paper Direct Document Download Engine
     async function compileBrandedDocumentForPDFDownload(e) {
         const targetExamId = e.target.getAttribute('data-id');
         const actionButton = e.target;
@@ -171,89 +171,90 @@
             }
 
             actionButton.disabled = true;
-            actionButton.textContent = "Opening Document...";
+            actionButton.textContent = "Downloading...";
 
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
-            // Build the clean paper markup string
-            let paperMarkup = `
-                <html>
-                <head>
-                    <title>${examData.title.replace(/\s+/g, '_')}_Question_Paper</title>
-                    <style>
-                        body { background: #ffffff !important; color: #000000 !important; font-family: "Times New Roman", Times, serif !important; padding: 20px; margin: 0; }
-                        .paper-matrix { width: 100%; max-width: 800px; margin: 0 auto; }
-                        .meta-row { display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; }
-                        .question-node { margin-bottom: 20px; page-break-inside: avoid; }
-                        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-left: 20px; margin-top: 6px; font-size: 14px; }
-                        @media print {
-                            body { padding: 0; margin: 0; }
-                            .question-node { page-break-inside: avoid !important; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="paper-matrix">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
-                            <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
-                            <div style="width: 82%; text-align: right;">
-                                <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
-                                <p style="font-size: 11px; color: #374151; margin: 2px 0 0 0; line-height: 1.4; font-family: sans-serif;">
-                                    Address: 262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001<br>
-                                    Website: <b>www.surajenglishacademy.in</b> | Mobile: +91 94273 92046 | WhatsApp: +91 89801 90101
-                                </p>
-                            </div>
+            // COMPILE THE COMPLETE ISOLATED STANDALONE DOCUMENT MARKUP STRING
+            let standalonePaperMarkup = `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>${examData.title.replace(/\s+/g, '_')}_Question_Paper</title>
+                <style>
+                    body { background: #ffffff !important; color: #000000 !important; font-family: "Times New Roman", Times, serif !important; padding: 40px; margin: 0; }
+                    .paper-matrix { width: 100%; max-width: 800px; margin: 0 auto; }
+                    .meta-row { display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; }
+                    .question-node { margin-bottom: 20px; page-break-inside: avoid; }
+                    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-left: 20px; margin-top: 6px; font-size: 14px; }
+                    @media print {
+                        body { padding: 0; margin: 0; }
+                        .question-node { page-break-inside: avoid !important; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="paper-matrix">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                        <div style="width: 15%;"><img src="https://www.surajenglishacademy.in/assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
+                        <div style="width: 82%; text-align: right;">
+                            <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
+                            <p style="font-size: 11px; color: #374151; margin: 2px 0 0 0; line-height: 1.4; font-family: sans-serif;">
+                                Address: 262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001<br>
+                                Website: <b>www.surajenglishacademy.in</b> | Mobile: +91 94273 92046 | WhatsApp: +91 89801 90101
+                            </p>
                         </div>
+                    </div>
 
-                        <div style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; letter-spacing: 0.5px;">
-                            ${examData.title}
-                        </div>
-                        
-                        <div class="meta-row">
-                            <div>Subject: ${examData.subject}</div>
-                            <div>Standard: ${collectionStandardsLabel}</div>
-                        </div>
+                    <div style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; color: #000000; letter-spacing: 0.5px;">
+                        ${examData.title}
+                    </div>
+                    
+                    <div class="meta-row">
+                        <div>Subject: ${examData.subject}</div>
+                        <div>Standard: ${collectionStandardsLabel}</div>
+                    </div>
 
-                        <div class="meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
-                            <div>Duration: ${examData.duration} Minutes</div>
-                            <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
-                        </div>
+                    <div class="meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px; color: #000;">
+                        <div>Duration: ${examData.duration} Minutes</div>
+                        <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
+                    </div>
 
-                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px;">
-                            <div>Student Full Name: ________________________________________________</div>
-                            <div>Roll Number: ____________________</div>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px; color: #000;">
+                        <div>Student Full Name: ________________________________________________</div>
+                        <div>Roll Number: ____________________</div>
+                    </div>
 
-                        <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px;">
-                            Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
-                        </div>
+                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000;">
+                        Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
+                    </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
             `;
 
             compiledQuestions.forEach((q, index) => {
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
-                paperMarkup += `
+                standalonePaperMarkup += `
                     <div class="question-node">
-                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4;">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
                             </div>
-                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace;">[${q.marks} Mark(s)]</div>
+                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace; color: #000;">[${q.marks} Mark(s)]</div>
                         </div>
                 `;
 
                 if (q.qImgData || q.qImg) {
-                    paperMarkup += `
+                    standalonePaperMarkup += `
                         <div style="margin: 8px 0 8px 25px;">
                             <img src="${q.qImgData || q.qImg}" style="max-height: 150px; width: auto; border: 1px solid #000000; padding: 1px;">
                         </div>
                     `;
                 }
 
-                paperMarkup += `
-                        <div class="options-grid">
+                standalonePaperMarkup += `
+                        <div class="options-grid" style="color: #000;">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -263,9 +264,9 @@
                 `;
             });
 
-            paperMarkup += `
+            standalonePaperMarkup += `
                         </div>
-                        <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; letter-spacing: 1px;">
+                        <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; color: #000; letter-spacing: 1px;">
                             --- Best Of Luck ---
                         </div>
                     </div>
@@ -273,21 +274,30 @@
                 </html>
             `;
 
-            // SPAWN AN ISOLATED BLANK WINDOW CONTEXT
-            const pdfWindow = window.open('', '_blank');
-            pdfWindow.document.write(paperMarkup);
-            pdfWindow.document.close();
-
-            // Fire print dialog immediately on the fresh window setup
-            pdfWindow.focus();
-            pdfWindow.print();
+            // ZERO SCREEN FLASH BLOB COMPRESSION TRIGGER
+            // This compresses the raw string data into an organic downloadable binary data block file context instantly
+            const binaryFileBlobContext = new Blob([standalonePaperMarkup], { type: 'text/html;charset=utf-8' });
+            const temporaryDownloadAnchorHook = document.createElement('a');
+            
+            // Generate unique local mapping string block address pointing straight to file cache memories
+            temporaryDownloadAnchorHook.href = URL.createObjectURL(binaryFileBlobContext);
+            temporaryDownloadAnchorHook.download = `${examData.title.replace(/\s+/g, '_')}_Question_Paper.html`;
+            
+            // Programmatically trigger download loop natively behind the scenes
+            document.body.appendChild(temporaryDownloadAnchorHook);
+            temporaryDownloadAnchorHook.click();
+            
+            // Erase cache anchors from hardware space instantly to finalize lifecycle processes
+            document.body.removeChild(temporaryDownloadAnchorHook);
+            URL.revokeObjectURL(temporaryDownloadAnchorHook.href);
 
         } catch (printErr) {
-            console.error("PDF download failure:", printErr);
-            alert("Error spawning printable target workspace.");
+            console.error("Document build extraction failure:", printErr);
+            alert("Error packaging paper data schema strings.");
         } finally {
             actionButton.disabled = false;
-            actionButton.textContent = "Download PDF";
+            // Update the button text to match the new file delivery method
+            actionButton.textContent = "Download Document";
         }
     }
 
