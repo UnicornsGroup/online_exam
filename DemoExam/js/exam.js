@@ -133,7 +133,7 @@
                     <td class="py-3.5 px-2 font-mono text-emerald-400 font-bold">${data.totalMarks} M</td>
                     <td class="py-3.5 px-2 text-right space-x-2">
                         <button class="load-exam-edit-btn bg-blue-900/50 hover:bg-blue-800 border border-blue-700/50 px-3 py-1 rounded text-xs font-bold text-blue-200" data-id="${doc.id}">Edit / Modify</button>
-                        <button class="generate-print-sheet-btn bg-emerald-900/50 hover:bg-emerald-800 border border-emerald-700/50 px-3 py-1 rounded text-xs font-bold text-emerald-200 transition-colors" data-id="${doc.id}">Print Paper</button>
+                        <button class="generate-print-sheet-btn bg-emerald-900/50 hover:bg-emerald-800 border border-emerald-700/50 px-3 py-1 rounded text-xs font-bold text-emerald-200 transition-colors" data-id="${doc.id}">Download PDF</button>
                     </td>
                 `;
                 examsInventoryTableBodyOutlet.appendChild(tr);
@@ -144,15 +144,17 @@
             });
 
             document.querySelectorAll('.generate-print-sheet-btn').forEach(btn => {
-                btn.addEventListener('click', compileBrandedDocumentForPrintJob);
+                btn.addEventListener('click', compileBrandedDocumentForPDFDownload);
             });
 
         } catch(err) { console.error(err); }
     }
 
-    // High-Resolution Branded Question Paper Print Compilation Engine
-    async function compileBrandedDocumentForPrintJob(e) {
+    // High-Resolution Branded Question Paper PDF Compilation and Downloading Engine
+    async function compileBrandedDocumentForPDFDownload(e) {
         const targetExamId = e.target.getAttribute('data-id');
+        const actionButton = e.target;
+        
         try {
             const targetDocSnap = await window.getDoc(window.doc(window.db, "exams", targetExamId));
             if(!targetDocSnap.exists()) {
@@ -164,16 +166,19 @@
             const compiledQuestions = examData.questions || [];
 
             if(compiledQuestions.length === 0) {
-                alert("This examination schema configuration holds zero item questionnaires to print.");
+                alert("This examination schema configuration holds zero item questionnaires to export.");
                 return;
             }
+
+            actionButton.disabled = true;
+            actionButton.textContent = "Compiling PDF...";
 
             const printDomWorkspaceNode = document.getElementById('offlinePrintPaperWorkspace');
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
             let printLayoutHTML = `
-                <div class="print-paper-matrix" style="color: #000000 !important;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                <div class="pdf-document-matrix">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-b: 2px solid #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
                         <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
                         <div style="width: 82%; text-align: right;">
                             <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
@@ -184,26 +189,26 @@
                         </div>
                     </div>
 
-                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; letter-spacing: 0.5px;">
+                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; color: #000; letter-spacing: 0.5px;">
                         ${examData.title}
                     </div>
                     
-                    <div class="print-meta-row">
+                    <div class="pdf-meta-row">
                         <div>Subject: ${examData.subject}</div>
                         <div>Standard: ${collectionStandardsLabel}</div>
                     </div>
 
-                    <div class="print-meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
+                    <div class="pdf-meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
                         <div>Duration: ${examData.duration} Minutes</div>
                         <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px; color: #000;">
                         <div>Student Full Name: ________________________________________________</div>
                         <div>Roll Number: ____________________</div>
                     </div>
 
-                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px;">
+                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000;">
                         Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
                     </div>
 
@@ -211,12 +216,11 @@
             `;
 
             compiledQuestions.forEach((q, index) => {
-                // Clear out dynamic web text tags like paragraphs or linebreaks from editors to print natively onto standard sheets
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
                 printLayoutHTML += `
-                    <div class="print-question-node">
-                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4;">
+                    <div class="pdf-question-node" style="page-break-inside: avoid !important;">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
                             </div>
@@ -224,7 +228,6 @@
                         </div>
                 `;
 
-                // Render integrated diagram strings if present inside database arrays
                 if (q.qImgData || q.qImg) {
                     printLayoutHTML += `
                         <div style="margin: 8px 0 8px 25px;">
@@ -234,7 +237,7 @@
                 }
 
                 printLayoutHTML += `
-                        <div class="print-options-grid">
+                        <div class="pdf-options-grid">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -246,18 +249,38 @@
 
             printLayoutHTML += `
                     </div>
-                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; letter-spacing: 1px;">
+                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; color: #000; letter-spacing: 1px;">
                         --- Best Of Luck ---
                     </div>
                 </div>
             `;
 
+            // Render content layout cleanly into hidden workspace node 
             printDomWorkspaceNode.innerHTML = printLayoutHTML;
-            window.print();
+            printDomWorkspaceNode.style.display = "block";
+
+            // Configure html2pdf compression settings variables
+            const downloadOptionsConfig = {
+                margin:       [12, 12, 12, 12],
+                filename:     `${examData.title.replace(/\s+/g, '_')}_Question_Paper.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Initialize programmatic background processing loop and stream downloading sequence
+            await html2pdf().set(downloadOptionsConfig).from(printDomWorkspaceNode).save();
+            
+            // Clean up workspace viewport states back into hidden baseline configurations
+            printDomWorkspaceNode.innerHTML = "";
+            printDomWorkspaceNode.style.display = "none";
 
         } catch (printErr) {
-            console.error("Print mapping compilation failed:", printErr);
-            alert("Error running the printable document schema conversion engine.");
+            console.error("PDF download mapping compilation failed:", printErr);
+            alert("Error running the automated PDF download engine.");
+        } finally {
+            actionButton.disabled = false;
+            actionButton.textContent = "Download PDF";
         }
     }
 
