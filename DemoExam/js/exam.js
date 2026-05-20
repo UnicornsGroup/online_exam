@@ -172,8 +172,21 @@
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
             let printLayoutHTML = `
-                <div class="print-paper-matrix">
-                    <div class="print-header-title">${examData.title}</div>
+                <div class="print-paper-matrix" style="color: #000000 !important;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                        <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
+                        <div style="width: 82%; text-align: right;">
+                            <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
+                            <p style="font-size: 11px; color: #374151; margin: 2px 0 0 0; line-height: 1.4; font-family: sans-serif;">
+                                Address: 262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001<br>
+                                Website: <b>www.surajenglishacademy.in</b> | Mobile: +91 94273 92046 | WhatsApp: +91 89801 90101
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; letter-spacing: 0.5px;">
+                        ${examData.title}
+                    </div>
                     
                     <div class="print-meta-row">
                         <div>Subject: ${examData.subject}</div>
