@@ -177,8 +177,8 @@
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
             let printLayoutHTML = `
-                <div class="pdf-document-matrix">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-b: 2px solid #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
+                <div class="pdf-document-matrix" style="background: #ffffff !important; color: #000000 !important; padding: 20px !important; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
                         <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
                         <div style="width: 82%; text-align: right;">
                             <h1 style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; font-family: sans-serif;">Suraj English Academy, Palanpur</h1>
@@ -193,12 +193,12 @@
                         ${examData.title}
                     </div>
                     
-                    <div class="pdf-meta-row">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; color: #000000;">
                         <div>Subject: ${examData.subject}</div>
                         <div>Standard: ${collectionStandardsLabel}</div>
                     </div>
 
-                    <div class="pdf-meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px; font-weight: bold; color: #000000;">
                         <div>Duration: ${examData.duration} Minutes</div>
                         <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
                     </div>
@@ -209,7 +209,7 @@
                     </div>
 
                     <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000;">
-                        Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
+                        Instructions Guidelines: Select exactly one valid response key for each question. Ensure choices are read comprehensively before answering.
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -219,7 +219,7 @@
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
                 printLayoutHTML += `
-                    <div class="pdf-question-node" style="page-break-inside: avoid !important;">
+                    <div class="pdf-question-node" style="margin-bottom: 18px; page-break-inside: avoid !important;">
                         <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
@@ -237,7 +237,7 @@
                 }
 
                 printLayoutHTML += `
-                        <div class="pdf-options-grid">
+                        <div class="pdf-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-left: 20px; margin-top: 6px; font-size: 14px; color: #000;">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -255,25 +255,25 @@
                 </div>
             `;
 
-            // Render content layout cleanly into hidden workspace node 
+            // FIXED: Lift container out of layout display:none restrictions without changing screen style rules
             printDomWorkspaceNode.innerHTML = printLayoutHTML;
-            printDomWorkspaceNode.style.display = "block";
+            printDomWorkspaceNode.setAttribute("style", "display: block !important; position: absolute; left: -9999px; top: 0; background: #ffffff; width: 790px;");
 
-            // Configure html2pdf compression settings variables
+            // Configure html2pdf execution bounds mapping variables
             const downloadOptionsConfig = {
-                margin:       [12, 12, 12, 12],
+                margin:       [10, 12, 10, 12],
                 filename:     `${examData.title.replace(/\s+/g, '_')}_Question_Paper.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Initialize programmatic background processing loop and stream downloading sequence
+            // Process file stream compilation block
             await html2pdf().set(downloadOptionsConfig).from(printDomWorkspaceNode).save();
             
-            // Clean up workspace viewport states back into hidden baseline configurations
+            // Clean workspace nodes back down into zero metrics visibility profiles
             printDomWorkspaceNode.innerHTML = "";
-            printDomWorkspaceNode.style.display = "none";
+            printDomWorkspaceNode.setAttribute("style", "display: none;");
 
         } catch (printErr) {
             console.error("PDF download mapping compilation failed:", printErr);
