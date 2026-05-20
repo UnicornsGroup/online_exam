@@ -150,7 +150,7 @@
         } catch(err) { console.error(err); }
     }
 
-    // High-Resolution Branded Question Paper PDF Compilation and Downloading Engine
+    // High-Resolution Branded Question Paper Core Compilation Download Engine
     async function compileBrandedDocumentForPDFDownload(e) {
         const targetExamId = e.target.getAttribute('data-id');
         const actionButton = e.target;
@@ -171,13 +171,14 @@
             }
 
             actionButton.disabled = true;
-            actionButton.textContent = "Compiling PDF...";
+            actionButton.textContent = "Compiling Layout...";
 
+            const mainDashboardLayoutNode = document.getElementById('adminPortalMainLayoutWrapper');
+            const printDomWorkspaceNode = document.getElementById('offlinePrintPaperWorkspace');
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
-            // BUILD THE FULL TEMPLATE DIRECTLY AS AN ISOLATED HTML STRING
             let printLayoutHTML = `
-                <div style="background-color: #ffffff !important; color: #000000 !important; padding: 25px !important; font-family: 'Times New Roman', Times, serif !important; width: 100%; box-sizing: border-box;">
+                <div class="pdf-document-matrix" style="background: #ffffff !important; color: #000000 !important; padding: 20px; width: 100%; box-sizing: border-box;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
                         <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
                         <div style="width: 82%; text-align: right;">
@@ -189,27 +190,27 @@
                         </div>
                     </div>
 
-                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; color: #000000 !important; letter-spacing: 0.5px;">
+                    <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family: sans-serif; color: #000; letter-spacing: 0.5px;">
                         ${examData.title}
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; color: #000000 !important;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000000; margin-bottom: 12px; padding-bottom: 4px; font-size: 14px; font-weight: bold; color: #000000;">
                         <div>Subject: ${examData.subject}</div>
                         <div>Standard: ${collectionStandardsLabel}</div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px; font-weight: bold; color: #000000 !important;">
+                    <div style="display: flex; justify-content: space-between; margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px; font-weight: bold; color: #000000;">
                         <div>Duration: ${examData.duration} Minutes</div>
                         <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px; color: #000000 !important;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px; color: #000;">
                         <div>Student Full Name: ________________________________________________</div>
                         <div>Roll Number: ____________________</div>
                     </div>
 
-                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000000 !important;">
-                        Instructions Guidelines: Select exactly one valid response key for each question. Ensure choices are read comprehensively before answering.
+                    <div style="font-size: 12px; font-style: italic; font-weight: bold; margin-bottom: 25px; border-left: 3px solid #000; padding-left: 8px; color: #000;">
+                        Instructions Guidelines: Select exactly one definitive response configuration key for each block. Ensure structures are read comprehensively before checking option items.
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -219,12 +220,12 @@
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
                 printLayoutHTML += `
-                    <div style="margin-bottom: 18px; page-break-inside: avoid !important; color: #000000 !important;">
-                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000000 !important;">
+                    <div class="pdf-question-node">
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
                             </div>
-                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace; color: #000000 !important;">[${q.marks} Mark(s)]</div>
+                            <div style="font-weight: bold; font-size: 13px; white-space: nowrap; font-family: monospace; color: #000;">[${q.marks} Mark(s)]</div>
                         </div>
                 `;
 
@@ -237,7 +238,7 @@
                 }
 
                 printLayoutHTML += `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-left: 20px; margin-top: 6px; font-size: 14px; color: #000000 !important;">
+                        <div class="pdf-options-grid">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -249,27 +250,31 @@
 
             printLayoutHTML += `
                     </div>
-                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; color: #000000 !important; letter-spacing: 1px;">
+                    <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; color: #000; letter-spacing: 1px;">
                         --- Best Of Luck ---
                     </div>
                 </div>
             `;
 
-            // CONFIGURE OPTIONS FOR PURE STRING TRANSFORMATION MODE
-            const downloadOptionsConfig = {
-                margin:       [10, 12, 10, 12],
-                filename:     `${examData.title.replace(/\s+/g, '_')}_Question_Paper.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            // CRITICAL FIX: Direct DOM swapping avoids html2canvas engine parsing vulnerabilities entirely
+            const standardPageStateBackup = mainDashboardLayoutNode.innerHTML;
+            
+            // Swap live view state to the crisp printable template sheet
+            mainDashboardLayoutNode.style.display = 'none';
+            printDomWorkspaceNode.innerHTML = printLayoutHTML;
+            printDomWorkspaceNode.style.display = 'block';
 
-            // PASSED DIRECTLY AS A STRING PARAMETER INSTEAD OF CAPTURING DOM ELEMENTS
-            await html2pdf().set(downloadOptionsConfig).from(printLayoutHTML).save();
+            // Trigger system hardware thread execution directly
+            window.print();
+
+            // Revert layout configurations seamlessly after print or PDF export completion
+            printDomWorkspaceNode.style.display = 'none';
+            printDomWorkspaceNode.innerHTML = '';
+            mainDashboardLayoutNode.style.display = 'block';
 
         } catch (printErr) {
-            console.error("PDF download mapping compilation failed:", printErr);
-            alert("Error running the automated PDF download engine.");
+            console.error("PDF download failure:", printErr);
+            alert("Error running the automated download engine.");
         } finally {
             actionButton.disabled = false;
             actionButton.textContent = "Download PDF";
