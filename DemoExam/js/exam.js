@@ -151,7 +151,6 @@
     }
 
     // High-Resolution Branded Question Paper PDF Compilation and Downloading Engine
-// High-Resolution Branded Question Paper PDF Compilation and Downloading Engine
     async function compileBrandedDocumentForPDFDownload(e) {
         const targetExamId = e.target.getAttribute('data-id');
         const actionButton = e.target;
@@ -174,11 +173,11 @@
             actionButton.disabled = true;
             actionButton.textContent = "Compiling PDF...";
 
-            const printDomWorkspaceNode = document.getElementById('offlinePrintPaperWorkspace');
             const collectionStandardsLabel = examData.standards ? examData.standards.join(', ') : examData.standard;
             
+            // BUILD THE FULL TEMPLATE DIRECTLY AS AN ISOLATED HTML STRING
             let printLayoutHTML = `
-                <div class="pdf-document-matrix" style="background-color: #ffffff !important; color: #000000 !important; padding: 30px !important; width: 100%; box-sizing: border-box;">
+                <div style="background-color: #ffffff !important; color: #000000 !important; padding: 25px !important; font-family: 'Times New Roman', Times, serif !important; width: 100%; box-sizing: border-box;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 15px;">
                         <div style="width: 15%;"><img src="../assets/logo/logo.png" style="max-height: 80px; width: auto;" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
                         <div style="width: 82%; text-align: right;">
@@ -220,7 +219,7 @@
                 const cleanPlainQuestionString = q.text.replace(/<\/?[^>]+(>|$)/g, " ");
 
                 printLayoutHTML += `
-                    <div class="pdf-question-node" style="margin-bottom: 18px; page-break-inside: avoid !important; color: #000000 !important;">
+                    <div style="margin-bottom: 18px; page-break-inside: avoid !important; color: #000000 !important;">
                         <div style="display: flex; justify-content: space-between; font-size: 15px; align-items: flex-start; line-height: 1.4; color: #000000 !important;">
                             <div style="max-width: 85%;">
                                 <strong>Q.${index + 1}</strong> &nbsp;${cleanPlainQuestionString}
@@ -238,7 +237,7 @@
                 }
 
                 printLayoutHTML += `
-                        <div class="pdf-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-left: 20px; margin-top: 6px; font-size: 14px; color: #000000 !important;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-left: 20px; margin-top: 6px; font-size: 14px; color: #000000 !important;">
                             <div><strong>(A)</strong> ${q.options?.A || q.optA || ''}</div>
                             <div><strong>(B)</strong> ${q.options?.B || q.optB || ''}</div>
                             <div><strong>(C)</strong> ${q.options?.C || q.optC || ''}</div>
@@ -256,25 +255,17 @@
                 </div>
             `;
 
-            // Clear previous HTML, drop hiding rules completely for html2canvas compilation metrics read execution loops
-            printDomWorkspaceNode.innerHTML = printLayoutHTML;
-            printDomWorkspaceNode.setAttribute("style", "display: block !important; background-color: #ffffff !important; min-height: 100%; width: 800px; margin: 0 auto;");
-
-            // Configure layout bounds configuration variables explicitly targeting our clean display node
+            // CONFIGURE OPTIONS FOR PURE STRING TRANSFORMATION MODE
             const downloadOptionsConfig = {
-                margin:       [10, 10, 10, 10],
+                margin:       [10, 12, 10, 12],
                 filename:     `${examData.title.replace(/\s+/g, '_')}_Question_Paper.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Process rendering safely on screen
-            await html2pdf().set(downloadOptionsConfig).from(printDomWorkspaceNode).save();
-            
-            // Instantly restore base hiding styling mechanics immediately upon file payload delivery completion
-            printDomWorkspaceNode.innerHTML = "";
-            printDomWorkspaceNode.setAttribute("style", "display: none;");
+            // PASSED DIRECTLY AS A STRING PARAMETER INSTEAD OF CAPTURING DOM ELEMENTS
+            await html2pdf().set(downloadOptionsConfig).from(printLayoutHTML).save();
 
         } catch (printErr) {
             console.error("PDF download mapping compilation failed:", printErr);
