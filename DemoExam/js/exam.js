@@ -174,18 +174,15 @@
             let printLayoutHTML = `
                 <div class="print-paper-matrix">
                     <div class="print-header-title">${examData.title}</div>
-                    <div style="text-align: center; font-size: 13px; font-weight: 600; margin-bottom: 12px; letter-spacing: 0.5px; color: #444; text-transform: uppercase;">
-                        Official Assessment Questionnaire Sheet &bull; Institute Portal License
-                    </div>
                     
                     <div class="print-meta-row">
-                        <div>Subject Matter: ${examData.subject}</div>
-                        <div>Target Allocation: ${collectionStandardsLabel}</div>
+                        <div>Subject: ${examData.subject}</div>
+                        <div>Standard: ${collectionStandardsLabel}</div>
                     </div>
 
                     <div class="print-meta-row" style="margin-top: -8px; font-size: 13px; border-bottom: 1.5px solid #000; padding-bottom: 6px; margin-bottom: 20px;">
-                        <div>Duration Window: ${examData.duration} Minutes</div>
-                        <div>Total Maximum Evaluation: ${examData.totalMarks} Marks</div>
+                        <div>Duration: ${examData.duration} Minutes</div>
+                        <div>Total Maximum Marks: ${examData.totalMarks} Marks</div>
                     </div>
 
                     <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 24px; padding: 0 4px;">
@@ -237,7 +234,7 @@
             printLayoutHTML += `
                     </div>
                     <div style="text-align: center; margin-top: 45px; font-size: 11px; font-weight: bold; border-top: 1px dashed #000000; padding-top: 12px; font-family: monospace; letter-spacing: 1px;">
-                        --- End of Evaluation Questionnaire Registry Record ---
+                        --- Best Of Luck ---
                     </div>
                 </div>
             `;
