@@ -42,6 +42,7 @@
     });
 
     let localQuestionStack = [];
+    let activeEditingQuestionIndex = -1; // Pointer tracking active inline question edit item (-1 means standard addition mode)
 
     const examMetaForm = document.getElementById('examMetaForm');
     const questionForm = document.getElementById('questionForm');
@@ -115,7 +116,7 @@
             examsInventoryTableBodyOutlet.innerHTML = "";
             
             if(snap.empty) {
-                examsInventoryTableBodyOutlet.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active exam schemas registered yet.</td></tr>`;
+                options.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active exam schemas registered yet.</td></tr>`;
                 return;
             }
 
@@ -176,6 +177,7 @@
             });
 
             localQuestionStack = examData.questions ? [...examData.questions] : [];
+            activeEditingQuestionIndex = -1; // Reset question editor track safely upon switching profiles
             refreshPreviewMatrix();
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -202,9 +204,16 @@
         if(uploadOptDImgFile) uploadOptDImgFile.value = "";
         quillRichEditorInstance.setText('');
 
+        const formSubmitButton = questionForm.querySelector('button[type="submit"]');
+        if(formSubmitButton) {
+            formSubmitButton.textContent = "Queue Question Item";
+            formSubmitButton.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors";
+        }
+
         if(examNegativeMarks) examNegativeMarks.value = 0;
         document.querySelectorAll('.std-checkbox').forEach(cb => cb.checked = false);
         localQuestionStack = [];
+        activeEditingQuestionIndex = -1;
         refreshPreviewMatrix();
     }
 
@@ -256,21 +265,38 @@
         submitBtn.disabled = true;
         submitBtn.textContent = "Compressing Assets...";
 
+        // Compress file selection matrices sequentially
         const base64QImg = await compressImageToInlineBase64String(uploadQImgFile);
         const base64OptA = await compressImageToInlineBase64String(uploadOptAImgFile);
         const base64OptB = await compressImageToInlineBase64String(uploadOptBImgFile);
         const base64OptC = await compressImageToInlineBase64String(uploadOptCImgFile);
         const base64OptD = await compressImageToInlineBase64String(uploadOptDImgFile);
 
-        localQuestionStack.push({
-            id: "Q_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+        const questionPayloadNode = {
+            id: activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].id : ("Q_" + Date.now() + "_" + Math.floor(Math.random() * 1000)),
             text: richHTMLQuestionTextContent,
-            qImgData: base64QImg, 
+            // Retain pre-existing asset string configurations if no fresh file stream is uploaded during modifications
+            qImgData: base64QImg || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].qImgData : ""), 
             options: { A: optA.value.trim(), B: optB.value.trim(), C: optC.value.trim(), D: optD.value.trim() },
-            optImagesData: { A: base64OptA, B: base64OptB, C: base64OptC, D: base64OptD }, 
+            optImagesData: { 
+                A: base64OptA || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].optImagesData?.A : ""), 
+                B: base64OptB || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].optImagesData?.B : ""), 
+                C: base64OptC || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].optImagesData?.C : ""), 
+                D: base64OptD || (activeEditingQuestionIndex > -1 ? localQuestionStack[activeEditingQuestionIndex].optImagesData?.D : "") 
+            }, 
             correct: correctOpt.value,
             marks: parseInt(qMarks.value) || 1
-        });
+        };
+
+        if (activeEditingQuestionIndex > -1) {
+            // Overwrite item payload data at the specific active editing index block pointer position
+            localQuestionStack[activeEditingQuestionIndex] = questionPayloadNode;
+            activeEditingQuestionIndex = -1; // Clear editing pipeline tracking variable
+            submitBtn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors";
+        } else {
+            // Append fresh data matrix node straight onto compiled runtime data structure array
+            localQuestionStack.push(questionPayloadNode);
+        }
 
         optA.value = "";
         optB.value = "";
@@ -304,11 +330,14 @@
 
             div.innerHTML = `
                 <div class="flex items-start justify-between">
-                    <div class="space-y-1">
+                    <div class="space-y-1 max-w-[75%]">
                         <span class="font-semibold text-white">Q${index + 1}: <div class="inline-block border-l border-gray-700 pl-1 text-gray-200">${item.text}</div> <span class="text-blue-400 ml-1">(${item.marks} M)</span></span>
                         ${qThumbHTML}
                     </div>
-                    <button class="remove-stack-btn text-red-400 hover:text-red-500 font-medium text-xs bg-red-950/40 px-2 py-0.5 rounded border border-red-900/50" data-idx="${index}">Remove</button>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <button class="edit-stack-btn text-amber-400 hover:text-amber-500 font-medium text-xs bg-amber-950/40 px-2 py-0.5 rounded border border-amber-900/50" data-idx="${index}">Edit</button>
+                        <button class="remove-stack-btn text-red-400 hover:text-red-500 font-medium text-xs bg-red-950/40 px-2 py-0.5 rounded border border-red-900/50" data-idx="${index}">Remove</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs text-gray-400 font-mono pl-2">
                     <div class="${item.correct==='A'?'text-green-400 font-bold':''}">A: ${item.options.A} ${item.optImagesData?.A ? '📷':''}</div>
@@ -320,9 +349,58 @@
             questionsPreviewList.appendChild(div);
         });
 
+        // Bind Question Modification Listener Hooks
+        document.querySelectorAll('.edit-stack-btn').forEach(btn => {
+            btn.addEventListener('click', (ev) => {
+                const indexTargetPointer = parseInt(ev.target.getAttribute('data-idx'));
+                activeEditingQuestionIndex = indexTargetPointer;
+                const targetedNodeStructure = localQuestionStack[indexTargetPointer];
+
+                // Load database values back up into front-end visual workspace containers
+                quillRichEditorInstance.clipboard.dangerouslyPasteHTML(targetedNodeStructure.text);
+                optA.value = targetedNodeStructure.options.A;
+                optB.value = targetedNodeStructure.options.B;
+                optC.value = targetedNodeStructure.options.C;
+                optD.value = targetedNodeStructure.options.D;
+                correctOpt.value = targetedNodeStructure.correct;
+                qMarks.value = targetedNodeStructure.marks;
+
+                // Clear input element cached stream references during initial editing steps
+                if(uploadQImgFile) uploadQImgFile.value = "";
+                if(uploadOptAImgFile) uploadOptAImgFile.value = "";
+                if(uploadOptBImgFile) uploadOptBImgFile.value = "";
+                if(uploadOptCImgFile) uploadOptCImgFile.value = "";
+                if(uploadOptDImgFile) uploadOptDImgFile.value = "";
+
+                // Shift Submit Button configuration layout parameters to show modification state
+                const submitBtn = questionForm.querySelector('button[type="submit"]');
+                if(submitBtn) {
+                    submitBtn.textContent = `Update Question #${indexTargetPointer + 1} ✓`;
+                    submitBtn.className = "w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-md";
+                }
+
+                // Smooth viewport scrolling up to manual form constructor matrix block
+                questionForm.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
         document.querySelectorAll('.remove-stack-btn').forEach(btn => {
             btn.addEventListener('click', (ev) => {
-                localQuestionStack.splice(parseInt(ev.target.getAttribute('data-idx')), 1);
+                const targetRemovalIndex = parseInt(ev.target.getAttribute('data-idx'));
+                // Safely handle resetting active modification indexes if editing target row gets deleted
+                if (activeEditingQuestionIndex === targetRemovalIndex) {
+                    activeEditingQuestionIndex = -1;
+                    const submitBtn = questionForm.querySelector('button[type="submit"]');
+                    if(submitBtn) {
+                        submitBtn.textContent = "Queue Question Item";
+                        submitBtn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors";
+                    }
+                    questionForm.reset();
+                    quillRichEditorInstance.setText('');
+                } else if (activeEditingQuestionIndex > targetRemovalIndex) {
+                    activeEditingQuestionIndex--; 
+                }
+                localQuestionStack.splice(targetRemovalIndex, 1);
                 refreshPreviewMatrix();
             });
         });
@@ -370,7 +448,9 @@
 
         try {
             if(activeDocId) {
-                await window.updateDoc(window.doc(window.doc(window.db, "exams", activeDocId)), examPayloadSchema);
+                // FIXED: Resolved duplicate window.doc nested wrapper references to map direct to correct target path string structures
+                const distinctRefTargetLocation = window.doc(window.db, "exams", activeDocId);
+                await window.updateDoc(distinctRefTargetLocation, examPayloadSchema);
                 alert("Success! The existing examination profile has been updated live inside the database.");
             } else {
                 examPayloadSchema.createdAt = new Date().toISOString();
