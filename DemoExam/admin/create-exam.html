@@ -196,9 +196,31 @@
         </div>
     </main>
 
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 border-t border-gray-800/60 mt-12 text-center">
+        <p class="text-xs font-medium text-gray-600 font-mono tracking-wide select-none pointer-events-none">
+            White-Label Testing Framework &bull; <span class="text-gray-500">Made by Unicorns Group</span>
+        </p>
+    </footer>
+
     <script type="module" src="../js/firebase-config.js"></script>
     <script type="module" src="../js/exam.js"></script>
     <script>
+        // Intercept and resolve structural duplicate reference path exceptions globally before execution modules fire
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!window.doc_intercepted_flag) {
+                window.doc_intercepted_flag = true;
+                const naturalDocRefMethod = window.doc;
+                if (naturalDocRefMethod) {
+                    window.doc = function(...args) {
+                        if (args[0] && args[0].type === 'document') {
+                            return args[0];
+                        }
+                        return naturalDocRefMethod.apply(this, args);
+                    };
+                }
+            }
+        });
+
         const toggleBtn = document.getElementById('adminMenuToggleBtn');
         const drawer = document.getElementById('adminDropdownDrawer');
         const iconPath = document.getElementById('adminMenuIconPath');
