@@ -4,7 +4,7 @@
  */
 const appConfig = {
   // 1. Core Branding Metadata
-  institutionName: "Suraj English Academy",
+  institutionName: "Demo Coaching Institute",
   shortName: "SEA",
   logoPath: "assets/logo/logo.png",
   fallbackLogoUrl: "https://via.placeholder.com/150?text=Academy+Logo",
