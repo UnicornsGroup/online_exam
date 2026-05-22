@@ -3,7 +3,7 @@
  */
 const appConfig = {
   institutionName: "Dummy Institution Name",
-  shortName: "DIN",
+  shortName: "DIN",x
   logoPath: "assets/logo/logo1.png",
   fallbackLogoUrl: "https://via.placeholder.com/150?text=Academy+Logo",
   emailDomain: "portal.com",
@@ -16,6 +16,7 @@ const appConfig = {
   },
 
   standards: [
+    "Std 06 (GM)",
     "STD 08 (GM)",
     "STD 08 (EM)",
     "STD 09 (GM)",
