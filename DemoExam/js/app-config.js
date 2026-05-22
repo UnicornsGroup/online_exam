@@ -2,7 +2,7 @@
  * White-Label Portal Configuration Matrix
  */
 const appConfig = {
-  institutionName: "Suraj English Academy",
+  institutionName: "Dummy Institution Name",
   shortName: "SEA",
   logoPath: "assets/logo/logo.png",
   fallbackLogoUrl: "https://via.placeholder.com/150?text=Academy+Logo",
