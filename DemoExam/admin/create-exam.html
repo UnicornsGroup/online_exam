@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create & Manage Exams - Admin Console</title>
+    <title data-brand="full">Create & Manage Exams - Admin Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
@@ -16,7 +16,6 @@
         .ql-snow .ql-fill { fill: #d1d5db !important; }
         .ql-snow .ql-picker { color: #d1d5db !important; }
 
-        /* Absolute Native Print Subsystem Formatting Rules */
         @media print {
             body, html {
                 background: #ffffff !important;
@@ -42,7 +41,7 @@
             }
             .pdf-question-node {
                 margin-bottom: 20px !important;
-                page-break-inside: avoid !important; /* Prevents questions splitting across page breaks */
+                page-break-inside: avoid !important;
             }
             .pdf-options-grid {
                 display: grid !important;
@@ -60,8 +59,8 @@
         <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <img src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                    <span class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
+                    <img src="" data-brand="logo" alt="Logo" class="h-10 w-auto object-contain">
+                    <span class="font-bold text-base text-white tracking-wide"><span data-brand="short">SEA</span> | Admin Panel</span>
                 </div>
                 
                 <button id="adminMenuToggleBtn" class="md:hidden text-gray-400 hover:text-white focus:outline-none p-2 rounded-md hover:bg-gray-700/50 transition-colors">
@@ -108,10 +107,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-400 mb-1.5">Target Allocation (Select Multiple)</label>
                             <div id="standardsCheckboxGroup" class="bg-gray-900/60 border border-gray-700 p-3 rounded-lg space-y-2 text-sm text-gray-300">
-                                <label class="flex items-center space-x-2.5 cursor-pointer"><input type="checkbox" value="STD 08 (GM)" class="std-checkbox rounded text-blue-600 bg-gray-700 border-gray-600"> <span>STD 08 (GM)</span></label>
-                                <label class="flex items-center space-x-2.5 cursor-pointer"><input type="checkbox" value="STD 08 (EM)" class="std-checkbox rounded text-blue-600 bg-gray-700 border-gray-600"> <span>STD 08 (EM)</span></label>
-                                <label class="flex items-center space-x-2.5 cursor-pointer"><input type="checkbox" value="STD 09 (GM)" class="std-checkbox rounded text-blue-600 bg-gray-700 border-gray-600"> <span>STD 09 (GM)</span></label>
-                                <label class="flex items-center space-x-2.5 cursor-pointer"><input type="checkbox" value="STD 10 (GM)" class="std-checkbox rounded text-blue-600 bg-gray-700 border-gray-600"> <span>STD 10 (GM)</span></label>
+                                <!-- Populated dynamically by app-config.js mapping -->
                             </div>
                         </div>
                         <div>
@@ -156,10 +152,8 @@
                         <form id="questionForm" class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Question Body Context</label>
-                                
                                 <div id="editorToolbar"></div>
                                 <div id="qTextEditor"></div>
-                                
                                 <div class="mt-2 flex items-center space-x-2 bg-gray-900/40 p-2 rounded-lg border border-gray-700/60">
                                     <span class="text-xs font-bold text-blue-400 uppercase tracking-wider font-mono">Image Asset:</span>
                                     <input type="file" id="uploadQImgFile" accept="image/*" class="text-xs text-gray-400 file:mr-3 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600 cursor-pointer">
@@ -236,7 +230,7 @@
 
         <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 border-t border-gray-800/60 mt-12 text-center">
             <p class="text-xs font-medium text-gray-600 font-mono tracking-wide select-none pointer-events-none">
-                White-Label Testing Framework &bull; <span class="text-gray-500">Made by Unicorns Group</span>
+                White-Label Testing Framework &bull; <span class="text-gray-500">Designed & Maintained by Unicorns Group</span>
             </p>
         </footer>
     </div>
@@ -283,5 +277,6 @@
         };
         document.getElementById('mobileLogoutBtn')?.addEventListener('click', handleMobileSignOut);
     </script>
+    <script src="../js/app-config.js"></script>
 </body>
 </html>

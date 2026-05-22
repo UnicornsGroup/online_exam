@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Performance Analytics - Admin Console</title>
+    <title data-brand="full">Student Performance Analytics - Admin Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../css/custom.css">
 </head>
@@ -13,8 +13,8 @@
     <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="../assets/logo/logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-                <span class="font-bold text-base text-white tracking-wide">SEA | Admin Panel</span>
+                <img src="" data-brand="logo" alt="Logo" class="h-10 w-auto object-contain">
+                <span class="font-bold text-base text-white tracking-wide"><span data-brand="short">SEA</span> | Admin Panel</span>
             </div>
             
             <!-- Mobile Menu Toggle Button -->
@@ -204,7 +204,6 @@
                 } catch(error) { console.error(error); }
             }
 
-            // Mobile Header Dynamic Drawer Toggles Binding Layer
             const toggleBtn = document.getElementById('adminMenuToggleBtn');
             const drawer = document.getElementById('adminDropdownDrawer');
             const iconPath = document.getElementById('adminMenuIconPath');
@@ -220,5 +219,6 @@
             });
         });
     </script>
+    <script src="../js/app-config.js"></script>
 </body>
 </html>
