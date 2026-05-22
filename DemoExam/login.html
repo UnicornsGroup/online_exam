@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Online Exam System</title>
+    <title data-brand="full">Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/custom.css">
 </head>
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-4">
     <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
-        <!-- Logo Display Section -->
         <div class="text-center mb-8">
-            <img src="assets/logo/logo.png" alt="Coaching Logo" class="mx-auto h-24 w-auto object-contain mb-4" onerror="this.src='https://via.placeholder.com/150?text=Logo'">
-            <h2 class="text-2xl font-bold text-white tracking-tight">Suraj English Academy</h2>
+            <img src="" data-brand="logo" alt="Coaching Logo" class="mx-auto h-24 w-auto object-contain mb-4">
+            <h2 data-brand="institution" class="text-2xl font-bold text-white tracking-tight">Loading...</h2>
             <p class="text-gray-400 text-sm mt-1">Examination Assessment Portal</p>
         </div>
 
-        <!-- Alert Notification Panel -->
         <div id="errorAlert" class="hidden bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6 text-sm" role="alert">
             <span id="errorMessage">Invalid Credentials.</span>
         </div>
 
-        <!-- Credentials Submission Form -->
         <form id="loginForm" class="space-y-6">
             <div>
                 <label class="block text-gray-300 text-sm font-medium mb-2" for="username">Admission Number / Username</label>
-                <input type="text" id="username" required placeholder="e.g., SEA20260002" 
+                <input type="text" id="username" data-brand-placeholder="admission" required placeholder="Loading..." 
                     class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
             </div>
 
@@ -48,10 +45,8 @@
         </div>
     </div>
     
-    <!-- Core Runtime Dependencies -->
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/auth.js"></script>
-    <!-- Dynamic Branding Engine Matrix Hook -->
     <script src="js/app-config.js"></script>
 </body>
 </html>

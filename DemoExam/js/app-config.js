@@ -1,16 +1,13 @@
 /**
  * White-Label Portal Configuration Matrix
- * Centralize all dynamic branding and educational data to support simple rebranding.
  */
 const appConfig = {
-  // 1. Core Branding Metadata
-  institutionName: "Demo Coaching Institute",
+  institutionName: "Suraj English Academy",
   shortName: "SEA",
   logoPath: "assets/logo/logo.png",
   fallbackLogoUrl: "https://via.placeholder.com/150?text=Academy+Logo",
-  emailDomain: "portal.com", // results in SEA20260002@portal.com
+  emailDomain: "portal.com",
 
-  // 2. Official Contact Information (Injected automatically into printable Question Papers & Merit PDFs)
   contactDetails: {
     address: "262, Tirupati Rajnagar, Abu Highway, Palanpur, Gujarat – 385001",
     website: "www.surajenglishacademy.in",
@@ -18,7 +15,6 @@ const appConfig = {
     whatsapp: "+91 89801 90101"
   },
 
-  // 3. Educational Standards Configuration Array
   standards: [
     "STD 08 (GM)",
     "STD 08 (EM)",
@@ -27,52 +23,45 @@ const appConfig = {
   ]
 };
 
-// Export to Global window object for system accessibility
 window.appConfig = appConfig;
 
-
-/**
- * Automatically applies brand configuration to active DOM elements on screen
- */
 function applyPortalDynamicBranding() {
   const config = window.appConfig;
   if (!config) return;
 
-  // A. Dynamically re-write page meta title tags
-  if (document.title.includes("Suraj English Academy")) {
-    document.title = document.title.replace("Suraj English Academy", config.institutionName);
-  } else if (document.title.includes("SEA")) {
-    document.title = document.title.replace("SEA", config.shortName);
+  // A. Dynamically rewrite page meta title tags based on attributes
+  const titleEl = document.querySelector('title');
+  if (titleEl) {
+    if (titleEl.getAttribute('data-brand') === 'full') {
+      titleEl.textContent = `${config.institutionName} - Assessment Portal`;
+    } else {
+      titleEl.textContent = `${config.shortName} - Terminal`;
+    }
   }
 
-  // B. Branded Text Headers
-  document.querySelectorAll('header span, h2, h1, p').forEach(el => {
-    // Process text updates safely
-    if (el.textContent.includes("Suraj English Academy")) {
-      // Fixed: Converted broken text to a proper global Regular Expression
-      el.textContent = el.textContent.replace(/Suraj English Academy/g, config.institutionName);
-    }
-    if (el.textContent.includes("SEA Admin")) {
-      el.textContent = el.textContent.replace(/SEA Admin/g, `${config.shortName} Admin`);
-    }
+  // B. Branded Text Headers & Elements using data attributes
+  document.querySelectorAll('[data-brand="institution"]').forEach(el => {
+    el.textContent = config.institutionName;
   });
 
-  // C. Update Dynamic Input Placeholders (Like Adm. ID e.g., SEA20260002)
-  const inputs = document.querySelectorAll('input');
-  inputs.forEach(input => {
-    if (input.placeholder && input.placeholder.includes("SEA")) {
-      // Fixed: Converted broken text to a proper global Regular Expression
-      input.placeholder = input.placeholder.replace(/SEA/g, config.shortName);
-    }
+  document.querySelectorAll('[data-brand="short"]').forEach(el => {
+    el.textContent = config.shortName;
+  });
+  
+  document.querySelectorAll('[data-brand="admin"]').forEach(el => {
+    el.textContent = `${config.shortName} Admin`;
   });
 
-  // D. Update Image Branding Asset URLs and Fail-Safe Placeholders
-  const logoImages = document.querySelectorAll('img[alt="Logo"], img[alt="Coaching Logo"]');
-  logoImages.forEach(img => {
+  // C. Update Dynamic Input Placeholders safely
+  document.querySelectorAll('input[data-brand-placeholder="admission"]').forEach(input => {
+    input.placeholder = `e.g., ${config.shortName}20260002`;
+  });
+
+  // D. Update Image Branding Asset URLs safely
+  document.querySelectorAll('img[data-brand="logo"]').forEach(img => {
     img.src = config.logoPath;
     img.onerror = () => {
       img.src = config.fallbackLogoUrl;
-      // Prevent infinite loop if fallback image also fails
       img.onerror = null; 
     };
   });
@@ -109,7 +98,6 @@ function applyPortalDynamicBranding() {
   }
 }
 
-// Fire the branding engine as soon as elements are interactive
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', applyPortalDynamicBranding);
 } else {
