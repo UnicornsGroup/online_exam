@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Online Exam System | UNICORNS GROUP</title>
-    <!-- Modern, clean fonts -->
+    <title>Ecosystem Software Solutions | UNICORNS GROUP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2 family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Subtle futuristic background glows -->
     <div class="bg-glow glow-left"></div>
     <div class="bg-glow glow-right"></div>
 
-    <!-- Header / Navigation Bar -->
+    <!-- Enterprise Navbar with Product Dropdown -->
     <header class="main-header">
         <nav class="nav-container">
             <a href="#home" class="logo" data-page="home">
@@ -25,13 +23,32 @@
             </a>
             <div class="nav-links" id="navMenu">
                 <a href="#home" class="nav-item active" data-page="home">Home</a>
-                <a href="#features" class="nav-item" data-page="features">How It Works</a>
-                <a href="#about" class="nav-item" data-page="about">Our Story</a>
-                <a href="#pricing" class="nav-item" data-page="pricing">Pricing</a>
-                <a href="#contact" class="nav-item" data-page="contact">Get a Demo</a>
+                
+                <!-- Dropdown Trigger Container -->
+                <div class="dropdown-wrapper">
+                    <span class="nav-item dropdown-trigger">Our Products 👇</span>
+                    <div class="dropdown-menu-box">
+                        <a href="#exam-system" class="dropdown-link-item cta-router" data-page="exam-system">
+                            <strong>🔒 Secure Exam Suite</strong>
+                            <span>Anti-cheating online testing platform.</span>
+                        </a>
+                        <div class="dropdown-link-item upcoming-item">
+                            <strong>📊 Smart ERP Core (Coming Soon)</strong>
+                            <span>Complete institute student management system.</span>
+                        </div>
+                        <div class="dropdown-link-item upcoming-item">
+                            <strong>🎙️ Live Class Studio (Coming Soon)</strong>
+                            <span>Ultra-low latency virtual academy portal.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#about" class="nav-item" data-page="about">Ecosystem Story</a>
+                <a href="#pricing" class="nav-item" data-page="pricing">Pricing Ecosystem</a>
+                <a href="#contact" class="nav-item" data-page="contact">Request Consultation</a>
             </div>
             <div class="nav-actions">
-                <a href="#contact" class="btn btn-primary cta-router" data-page="contact">Book Free Demo</a>
+                <a href="#contact" class="btn btn-primary cta-router" data-page="contact">Connect with Expert</a>
                 <button class="menu-toggle" id="menuToggle" aria-label="Open Menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -39,202 +56,181 @@
         </nav>
     </header>
 
-    <!-- Main Dynamic Website Body -->
     <main class="content-wrapper">
 
-        <!-- ===== HOME PAGE ===== -->
+        <!-- ===== HUB HOMEPAGE ===== -->
         <section id="home" class="tab-content active">
             <div class="hero-layout container">
                 <div class="hero-text">
                     <div class="trust-pill">
-                        <span class="pulse-dot"></span> Trusted by Top NEET/JEE Academies
+                        <span class="pulse-dot"></span> Institutional Operating Suite v2026
                     </div>
-                    <h1>Stop Exam Cheating. <span class="gradient-text">Protect Your Institute's Reputation.</span></h1>
-                    <p class="hero-description">The ultimate anti-cheating exam platform built for schools, coaching centers, and competitive testing hubs. Conduct flawless online tests with absolute peace of mind.</p>
+                    <h1>The Complete Software Suite for <span class="gradient-text">Modern Institutes.</span></h1>
+                    <p class="hero-description">We build enterprise-grade EdTech tools engineered to automate your management, protect your testing infrastructure, and scale your student admissions.</p>
                     <div class="hero-buttons">
-                        <a href="#contact" class="btn btn-primary btn-large cta-router" data-page="contact">Start Free Trial Instance</a>
-                        <a href="#features" class="btn btn-secondary btn-large cta-router" data-page="features">See How It Works</a>
-                    </div>
-                    <div class="trust-stats">
-                        <div class="stat-box"><strong>99.9%</strong><span>Cheating Prevented</span></div>
-                        <div class="stat-box"><strong>5 Lakhs+</strong><span>Exams Conducted</span></div>
+                        <a href="#exam-system" class="btn btn-primary btn-large cta-router" data-page="exam-system">View Active Products</a>
+                        <a href="#about" class="btn btn-secondary btn-large cta-router" data-page="about">Explore Our Roadmap</a>
                     </div>
                 </div>
-                
-                <!-- Live Simulated Dashboard Preview -->
+                <div class="hero-visual">
+                    <div class="glass-box suite-preview-card">
+                        <h3>UNICORNS Product Matrix</h3>
+                        <p class="matrix-desc">Connected institutional software utilities deployed on a single centralized database server.</p>
+                        <div class="matrix-status-list">
+                            <div class="status-row active-suite">
+                                <span class="indicator">●</span>
+                                <strong>Secure Exam Engine</strong>
+                                <span class="status-badge live">LIVE / READY</span>
+                            </div>
+                            <div class="status-row pending-suite">
+                                <span class="indicator">○</span>
+                                <strong>LMS &amp; Content Delivery</strong>
+                                <span class="status-badge pipeline">DEVELOPMENT</span>
+                            </div>
+                            <div class="status-row pending-suite">
+                                <span class="indicator">○</span>
+                                <strong>Smart Analytics Billing</strong>
+                                <span class="status-badge pipeline">DEVELOPMENT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Product Directory Showcase Section -->
+            <div class="container segment-spacing">
+                <h2 class="title-center">Explore Our Enterprise Software Modules</h2>
+                <div class="product-showcase-grid">
+                    <div class="glass-box product-catalog-card">
+                        <span class="catalog-tag">FLAGSHIP MODULE</span>
+                        <h3>Secure Anti-Cheating Online Exam System</h3>
+                        <p>Eliminate digital exam malpractice. Features tab-switch locking, screenshot blocking, and automatic malpractice reports designed for high-stakes NEET/JEE ranking tests.</p>
+                        <a href="#exam-system" class="catalog-btn cta-router" data-page="exam-system">Launch Product Page →</a>
+                    </div>
+                    <div class="glass-box product-catalog-card blurred-upcoming">
+                        <span class="catalog-tag pipeline-tag">IN PIPELINE</span>
+                        <h3>Institute Management ERP Core</h3>
+                        <p>Automate administrative operations. Manage fees structure processing, smart biometric attendance tracking, auto-reminders, and comprehensive student report cards effortlessly.</p>
+                        <span class="placeholder-link-text">Coming in Q4 2026</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRODUCT PAGE 1: EXAM SYSTEM SEPARATE LANDER ===== -->
+        <section id="exam-system" class="tab-content">
+            <div class="container hero-layout">
+                <div class="hero-text">
+                    <div class="trust-pill"><span class="pulse-dot"></span> Core System Active</div>
+                    <h2>Secure Online Exam System Framework</h2>
+                    <p class="hero-description">The ultimate anti-cheating exam platform built to eliminate cheating, stop question paper leaks, and deliver instant, accurate batch rank analysis reports.</p>
+                    <div class="hero-buttons">
+                        <a href="#contact" class="btn btn-primary cta-router" data-page="contact">Request Sandbox Setup</a>
+                    </div>
+                </div>
                 <div class="hero-visual">
                     <div class="glass-box dashboard-preview">
                         <div class="preview-header">
                             <div class="header-dots"><span></span><span></span><span></span></div>
-                            <span class="panel-title">ADMIN CONTROLLER: ACTIVE EXAM MONITOR</span>
-                            <span class="secure-tag">SECURE</span>
+                            <span class="panel-title">ANTI-CHEAT MONITORS ACTIVE</span>
                         </div>
                         <div class="preview-body">
                             <p class="log-row"><span class="time">[10:15:22]</span> <span class="msg-success">Success:</span> Exam environment locked down.</p>
-                            <p class="log-row"><span class="time">[10:15:45]</span> <span class="msg-info">Info:</span> Disabled right-click and copy-paste for all students.</p>
-                            <p class="log-row alert-flash" id="liveAlertLog"><span class="time">[10:16:01]</span> <span class="msg-danger">Warning:</span> Student #402 blocked from switching tabs to Google.</p>
-                            <div class="simulated-progress"><div class="progress-fill"></div></div>
+                            <p class="log-row alert-flash" id="liveAlertLog"><span class="time">[10:16:01]</span> <span class="msg-danger">Warning:</span> Student blocked from opening secondary tabs.</p>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Testimonial Short Block -->
+            
             <div class="container segment-spacing">
-                <h2 class="title-center">What Coaching Directors Say</h2>
-                <div class="testimonial-container glass-box">
-                    <p class="quote">"Before using UNICORNS GROUP, we constantly worried about students leaking test questions or cheating on WhatsApp. Now, our online weekly NEET mock tests are 100% secure. Absolute game changer for our business."</p>
-                    <div class="quote-author">
-                        <strong>Managing Director</strong>
-                        <span>Leading National JEE/NEET Coaching Hub</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAQs Block -->
-            <div class="container segment-spacing">
-                <h2 class="title-center">Got Questions? We Have Answers.</h2>
-                <div class="accordion-list">
-                    <div class="glass-box accordion-card">
-                        <div class="accordion-trigger"><h3>What happens if a student tries to cheat?</h3></div>
-                        <div class="accordion-contents"><p>If a student tries to right-click, copy a question, open a new browser tab, or minimize the screen, the system instantly blocks the action, gives them a warning strike, and logs it for the admin. You can set it to auto-submit their test after 3 warnings.</p></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== HOW IT WORKS PAGE ===== -->
-        <section id="features" class="tab-content">
-            <div class="container">
-                <div class="heading-center">
-                    <h2 class="section-title">Everything You Need to Run Secure Exams</h2>
-                    <p class="section-subtitle">Powerful tools that are easy for teachers to use, and impossible for students to cheat on.</p>
-                </div>
                 <div class="grid-layout-3">
                     <div class="glass-box feature-card">
                         <div class="icon-wrap">🔒</div>
-                        <h3>Total Exam Lockdown</h3>
-                        <p>Students cannot open other tabs, look up answers on Google, or open secondary apps while the test is running.</p>
+                        <h3>Total Window Lockdown</h3>
+                        <p>Blocks secondary browser windows, extensions, and external application search protocols.</p>
                     </div>
                     <div class="glass-box feature-card">
                         <div class="icon-wrap">🚫</div>
-                        <h3>Copy &amp; Print Blocked</h3>
-                        <p>Right-clicking, taking screenshots, and copying or pasting questions is completely disabled to protect your question banks from leaking.</p>
+                        <h3>Input Disablement Suite</h3>
+                        <p>Right-click, copy-paste shortcuts, and screenshot clipping functions are absolutely blocked.</p>
                     </div>
                     <div class="glass-box feature-card">
                         <div class="icon-wrap">📊</div>
-                        <h3>Smart Analytics &amp; Merit Lists</h3>
-                        <p>Get beautiful reports instantly. The platform generates class-wide rank lists, accurate scorecards, and performance metrics automatically.</p>
-                    </div>
-                    <div class="glass-box feature-card">
-                        <div class="icon-wrap">🎨</div>
-                        <h3>Your Own Branding</h3>
-                        <p>Make the system look truly yours. Use your institute’s logo, matching brand colors, and custom login portals for students.</p>
+                        <h3>Instant PDF Scorecards</h3>
+                        <p>Generates class ranking sheets and category score distributions instantly on completion.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ===== ABOUT US PAGE ===== -->
+        <!-- ===== ABOUT COMPANY PAGE ===== -->
         <section id="about" class="tab-content">
             <div class="container split-about-layout">
                 <div>
-                    <h2 class="section-title">We Believe in Fair Competitive Education</h2>
-                    <p class="paragraph">At UNICORNS GROUP, we design secure digital software specifically for educational ecosystems. As testing moves online, traditional websites make it too easy for bad actors to cheat. We leveled the playing field by creating an unbreachable exam environment so hard-working students get the genuine ranks they deserve.</p>
-                    <blockquote class="fancy-quote">
-                        "We don't just build software. We help institutes protect their academic integrity and scale effortlessly."
-                    </blockquote>
-                </div>
-                <div class="about-right-pane">
-                    <div class="glass-box badge-metrics-box">
-                        <h3>100% Secure</h3>
-                        <p>Your question papers and student data belong strictly to you, hosted on premium, reliable secure cloud servers.</p>
-                    </div>
+                    <h2 class="section-title">The UNICORNS Software Vision</h2>
+                    <p class="paragraph">We don't build fragmented tools. We build integrated software solutions. Coaching centers and schools often face the frustration of using five different softwares from five different vendors to handle admission data, fees collection, live classes, and exams.</p>
+                    <p class="paragraph">Our corporate roadmap is focused on developing a completely unified application suite, allowing multi-branch institutes to manage their entire institutional life-cycle from a single security platform.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ===== PRICING PAGE ===== -->
+        <!-- ===== PRICING ECOSYSTEM ===== -->
         <section id="pricing" class="tab-content">
             <div class="container">
                 <div class="heading-center">
-                    <h2 class="section-title">Simple, Predictable Plans</h2>
-                    <p class="section-subtitle">Choose a plan based on your student batch sizes. No hidden maintenance charges.</p>
+                    <h2 class="section-title">Modular Licensing Plans</h2>
+                    <p class="section-subtitle">Pay only for the specific product modules you utilize. Scale your operations up or down at any time.</p>
                 </div>
                 <div class="pricing-flex-grid">
-                    <!-- Starter Card -->
                     <div class="glass-box pricing-plan">
-                        <span class="plan-title">Starter Pack</span>
-                        <div class="plan-price">₹7,999<span>/month</span></div>
-                        <p class="plan-desc">Great for local coaching classes and private schools.</p>
-                        <ul class="bullet-features">
-                            <li>✓ Up to 500 Active Students</li>
-                            <li>✓ Core Anti-Cheating Technology</li>
-                            <li>✓ Instant Result Generation</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-secondary full-width cta-router" data-page="contact">Get Started</a>
+                        <span class="plan-title">Exam Engine Module</span>
+                        <div class="plan-price">From ₹7,999<span>/month</span></div>
+                        <p class="plan-desc">Full access to our secure online assessment system infrastructure tier.</p>
+                        <a href="#contact" class="btn btn-secondary full-width cta-router" data-page="contact">Deploy Module</a>
                     </div>
-                    <!-- Popular Pro Card -->
                     <div class="glass-box pricing-plan popular-plan">
-                        <div class="popular-tag">MOST POPULAR CHOICE</div>
-                        <span class="plan-title">Institutional Pro</span>
-                        <div class="plan-price">₹19,999<span>/month</span></div>
-                        <p class="plan-desc">Designed for high-growth, serious JEE/NEET test centers.</p>
-                        <ul class="bullet-features">
-                            <li>✓ Up to 5,000 Active Students</li>
-                            <li>✓ Advanced 3-Warning Strike System</li>
-                            <li>✓ Live Real-Time Proctoring Dashboard</li>
-                            <li>✓ White-Label Custom Logo Branding</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-primary full-width cta-router" data-page="contact">Upgrade to Pro</a>
+                        <div class="popular-tag">BEST VALUE SYSTEM TIER</div>
+                        <span class="plan-title">Complete Campus Suite</span>
+                        <div class="plan-price">Custom Quote</div>
+                        <p class="plan-desc">Get access to the Exam Engine now, with automatic early access to future ERP releases.</p>
+                        <a href="#contact" class="btn btn-primary full-width cta-router" data-page="contact">Consult Enterprise Division</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ===== CONTACT/DEMO PAGE ===== -->
+        <!-- ===== LEAD DEMO INGESTION ===== -->
         <section id="contact" class="tab-content">
             <div class="container max-form-box">
                 <div class="glass-box structured-form-wrapper">
                     <div class="form-intro">
-                        <h2 class="text-center">Book a 15-Minute Live Demo</h2>
-                        <p class="text-center">See how easy it is to upload your question banks and run a cheat-proof exam live.</p>
+                        <h2 class="text-center">Connect with Our Strategy Engineers</h2>
+                        <p class="text-center">Let us know which product modules you are interested in trying out at your academy.</p>
                     </div>
-                    
                     <form id="leadCaptureForm" class="clean-form">
                         <div class="input-double-row">
                             <div class="input-element">
-                                <label for="userName">Your Name</label>
-                                <input type="text" id="userName" required placeholder="e.g., Professor Anand Kumar">
+                                <label for="userName">Contact Director</label>
+                                <input type="text" id="userName" required placeholder="Professor Anand Kumar">
                             </div>
                             <div class="input-element">
-                                <label for="instituteName">Institute Name</label>
-                                <input type="text" id="instituteName" required placeholder="e.g., Super 30 Classes">
+                                <label for="instituteName">Institute</label>
+                                <input type="text" id="instituteName" required placeholder="Super 30 Hub">
                             </div>
                         </div>
                         <div class="input-element">
-                            <label for="userEmail">Official Email</label>
-                            <input type="email" id="userEmail" required placeholder="e.g., contact@institute.com">
+                            <label for="moduleInterest">Primary Module of Interest</label>
+                            <input type="text" id="moduleInterest" readonly value="Secure Anti-Cheating Exam System" style="background: #121420; border-color: #312E81; color: #A5B4FC;">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-large full-width">Request Setup Details ⚡</button>
+                        <button type="submit" class="btn btn-primary btn-large full-width">Initialize Setup Mapping Protocol ⚡</button>
                     </form>
                     <div id="formSuccessMessage" class="success-alert-banner"></div>
-                    
-                    <!-- Direct Instant Messengers -->
-                    <div class="alternative-comms">
-                        <p class="alt-label">Talk directly with a product expert now:</p>
-                        <div class="comms-buttons">
-                            <a href="https://wa.me/919999999999" target="_blank" rel="noopener" class="direct-chip wa-chip">💬 Connect on WhatsApp</a>
-                            <a href="mailto:sales@unicornsgroup.com" class="direct-chip mail-chip">✉️ sales@unicornsgroup.com</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Site Footer -->
     <footer class="main-footer">
         <div class="container footer-grid">
             <div class="footer-branding">
@@ -242,22 +238,15 @@
                     <span class="logo-icon">⚡</span>
                     <span class="logo-text">UNICORNS <span class="gradient-text">GROUP</span></span>
                 </div>
-                <p>Empowering competitive institutes with smart, secure, unbreachable online exam infrastructures.</p>
+                <p>Architecting connected software ecosystems for elite educational groups worldwide.</p>
             </div>
             <div class="footer-links">
-                <h4>Product Info</h4>
-                <a href="#features" class="cta-router" data-page="features">How It Works</a>
-                <a href="#pricing" class="cta-router" data-page="pricing">Pricing Plans</a>
-            </div>
-            <div class="footer-links">
-                <h4>Company</h4>
-                <a href="#about" class="cta-router" data-page="about">Our Story</a>
+                <h4>Active Products</h4>
+                <a href="#exam-system" class="cta-router" data-page="exam-system">🔒 Secure Exam System</a>
             </div>
         </div>
         <div class="footer-copyright">
-            <div class="container copyright-flex">
-                <p>&copy; 2026 UNICORNS GROUP Solutions. All rights reserved.</p>
-            </div>
+            <div class="container"><p>&copy; 2026 UNICORNS GROUP Corporation. All rights reserved.</p></div>
         </div>
     </footer>
 
