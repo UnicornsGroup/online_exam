@@ -1,172 +1,160 @@
 /**
- * UNICORNS GROUP - Core Application State & Client-Side Single Page Router Engine
- * Validated Implementation for GitHub Pages Deployments
+ * UNICORNS GROUP - Interactive Router State & Lead Framework
  */
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- State & Config Scope Registry ---
-    const appState = {
-        activeRoute: "home",
-        mobileMenuOpen: false,
-        terminalMessages: [
-            "WARNING: Tab focus change captured on Candidate #0912.",
-            "INTERCEPT: External display mirror mechanism terminated.",
-            "SECURITY: Copy-paste attempt localized and expunged.",
-            "AUDIT LOG: Key integrity checksum validation completed."
+    // Core Application Page Tracking State
+    const currentAppConfig = {
+        activeTab: "home",
+        menuIsOpen: false,
+        simulatedLogs: [
+            "WARNING: Tab focus change captured on Candidate #0402.",
+            "INTERCEPT: External screen sharing app blocked on Candidate #112.",
+            "SECURITY: Copy-paste shortcut command blocked successfully.",
+            "SYSTEM: Continuous integrity check running... 0 leaks found."
         ]
     };
 
-    // --- Node Interface Map ---
-    const nodes = {
-        mobileToggle: document.getElementById("mobileToggle"),
+    // UI Nodes Selector Cache Map
+    const elements = {
+        menuToggle: document.getElementById("menuToggle"),
         navMenu: document.getElementById("navMenu"),
-        navLinks: document.querySelectorAll(".nav-link"),
-        pageViews: document.querySelectorAll(".page-view"),
-        routeTriggers: document.querySelectorAll(".route-cta-trigger"),
-        simulatedLog: document.getElementById("simulatedLog"),
-        faqItems: document.querySelectorAll(".faq-item"),
-        leadForm: document.getElementById("staticLeadCaptureForm"),
-        formFeedback: document.getElementById("formSubmissionFeedback")
+        navItems: document.querySelectorAll(".nav-item"),
+        tabViews: document.querySelectorAll(".tab-content"),
+        ctaRouters: document.querySelectorAll(".cta-router"),
+        liveAlertLog: document.getElementById("liveAlertLog"),
+        accordionCards: document.querySelectorAll(".accordion-card"),
+        leadForm: document.getElementById("leadCaptureForm"),
+        formFeedback: document.getElementById("formSuccessMessage")
     };
 
-    // --- Absolute Client Router Core ---
-    const executeClientNavigation = (targetRouteId) => {
-        if (!targetRouteId) return;
+    // Client Page Switching Router Configuration
+    const switchActiveViewTo = (targetId) => {
+        if (!targetId) return;
         
-        // Clean hash parameters from targetRouteId string
-        const routeCleanId = targetRouteId.replace("#", "");
-        const activeTargetSection = document.getElementById(routeCleanId);
+        const cleanId = targetId.replace("#", "");
+        const matchedSection = document.getElementById(cleanId);
         
-        if (activeTargetSection) {
-            // Drop visibility flags across all views
-            nodes.pageViews.forEach(view => view.classList.remove("active"));
+        if (matchedSection) {
+            // Hide all pages
+            elements.tabViews.forEach(view => view.classList.remove("active"));
             
-            // Activate selected system view target
-            activeTargetSection.classList.add("active");
-            appState.activeRoute = routeCleanId;
+            // Show selected page
+            matchedSection.classList.add("active");
+            currentAppConfig.activeTab = cleanId;
             
-            // Sync visible navigation indicators
-            nodes.navLinks.forEach(link => {
-                const linkTarget = link.getAttribute("data-route");
-                link.classList.toggle("active", linkTarget === routeCleanId);
+            // Sync visible navigation highlights
+            elements.navItems.forEach(item => {
+                const routeAttr = item.getAttribute("data-page");
+                item.classList.toggle("active", routeAttr === cleanId);
             });
 
-            // Smooth viewport layout resetting
+            // Smooth scroll page view context back to absolute top
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
 
-    // Wire up tracking links directly
-    const registerNavigationListeners = () => {
-        // Universal collector matching header links and floating structural CTAs
-        const universalClickTargets = [...nodes.navLinks, ...nodes.routeTriggers];
-        
-        universalClickTargets.forEach(element => {
-            element.addEventListener("click", (event) => {
-                const targetRoute = event.currentTarget.getAttribute("data-route");
-                if (targetRoute) {
-                    event.preventDefault();
-                    window.location.hash = targetRoute;
-                    executeClientNavigation(targetRoute);
-                    
-                    if (appState.mobileMenuOpen) toggleMobileMenuInterface();
-                }
-            });
-        });
-    };
-
-    // --- Mobile Interface Layout Toggle ---
-    const toggleMobileMenuInterface = () => {
-        appState.mobileMenuOpen = !appState.mobileMenuOpen;
-        nodes.navMenu.classList.toggle("active", appState.mobileMenuOpen);
-        
-        const spanBars = nodes.mobileToggle.querySelectorAll("span");
-        if (appState.mobileMenuOpen) {
-            spanBars[0].style.transform = "rotate(45deg) translate(5px, 5px)";
-            spanBars[1].style.opacity = "0";
-            spanBars[2].style.transform = "rotate(-45deg) translate(6px, -6px)";
-        } else {
-            spanBars[0].style.transform = "none";
-            spanBars[1].style.opacity = "1";
-            spanBars[2].style.transform = "none";
-        }
-    };
-
-    nodes.mobileToggle?.addEventListener("click", toggleMobileMenuInterface);
-
-    // --- FAQ Presentation Interactivity Component ---
-    nodes.faqItems.forEach(item => {
-        item.addEventListener("click", () => {
-            const isExpanded = item.classList.contains("expanded-state");
-            nodes.faqItems.forEach(el => el.classList.remove("expanded-state"));
-            if (!isExpanded) item.classList.add("expanded-state");
+    // Bootstrap click triggers for menus and quick setup button links
+    const combinedRoutingNodes = [...elements.navItems, ...elements.ctaRouters];
+    combinedRoutingNodes.forEach(trigger => {
+        trigger.addEventListener("click", (e) => {
+            const pageHandle = trigger.getAttribute("data-page");
+            if (pageHandle) {
+                e.preventDefault();
+                window.location.hash = pageHandle;
+                switchActiveViewTo(pageHandle);
+                
+                if (currentAppConfig.menuIsOpen) toggleMobileResponsiveMenu();
+            }
         });
     });
 
-    // --- Simulated Micro-Terminal Log Cycle ---
-    const startTerminalRotation = () => {
+    // Mobile Hamburger Toggle Mechanics
+    const toggleMobileResponsiveMenu = () => {
+        currentAppConfig.menuIsOpen = !currentAppConfig.menuIsOpen;
+        elements.navMenu.classList.toggle("active", currentAppConfig.menuIsOpen);
+        
+        const structuralBars = elements.menuToggle.querySelectorAll("span");
+        if (currentAppConfig.menuIsOpen) {
+            structuralBars[0].style.transform = "rotate(45deg) translate(4px, 4px)";
+            structuralBars[1].style.opacity = "0";
+            structuralBars[2].style.transform = "rotate(-45deg) translate(5px, -5px)";
+        } else {
+            structuralBars[0].style.transform = "none";
+            structuralBars[1].style.opacity = "1";
+            structuralBars[2].style.transform = "none";
+        }
+    };
+
+    elements.menuToggle?.addEventListener("click", toggleMobileResponsiveMenu);
+
+    // FAQ Drawer Accordion Click Actions
+    elements.accordionCards.forEach(card => {
+        card.addEventListener("click", () => {
+            const dynamicOpenState = card.classList.contains("active");
+            elements.accordionCards.forEach(c => c.classList.remove("active"));
+            if (!dynamicOpenState) card.classList.add("active");
+        });
+    });
+
+    // Live Simulated Mock Terminal Log Interchanging Component
+    const triggerTerminalMessageRotation = () => {
         setInterval(() => {
-            if (nodes.simulatedLog) {
-                nodes.simulatedLog.style.opacity = "0";
+            if (elements.liveAlertLog) {
+                elements.liveAlertLog.style.opacity = "0";
                 setTimeout(() => {
-                    const dynamicPhrase = appState.terminalMessages[Math.floor(Math.random() * appState.terminalMessages.length)];
-                    nodes.simulatedLog.innerHTML = `<span class="c-dim">[17:41:32]</span> <span class="c-red">${dynamicPhrase}</span>`;
-                    nodes.simulatedLog.style.opacity = "1";
+                    const messageString = currentAppConfig.simulatedLogs[Math.floor(Math.random() * currentAppConfig.simulatedLogs.length)];
+                    elements.liveAlertLog.innerHTML = `<span class="time">[10:16:01]</span> <span class="msg-danger">${messageString}</span>`;
+                    elements.liveAlertLog.style.opacity = "1";
                 }, 300);
             }
         }, 5000);
     };
+    triggerTerminalMessageRotation();
 
-    // --- Frontend Lead Processing Sandbox ---
-    nodes.leadForm?.addEventListener("submit", (event) => {
-        event.preventDefault();
+    // Frontend Lead Submission Form Handling Setup
+    elements.leadForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
         
-        const executionButton = nodes.leadForm.querySelector("button[type='submit']");
-        const fallbackText = executionButton.textContent;
+        const actionBtn = elements.leadForm.querySelector("button[type='submit']");
+        const fallbackText = actionBtn.textContent;
         
-        executionButton.disabled = true;
-        executionButton.textContent = "Connecting to Evaluation Enclave Matrix...";
+        actionBtn.disabled = true;
+        actionBtn.textContent = "Setting Up Your Security Sandbox Environment...";
         
+        // Emulating static security token assignment processing delays
         setTimeout(() => {
-            executionButton.textContent = "Secure Sandbox Ready ✓";
-            executionButton.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+            actionBtn.textContent = "Sandbox Configured ✓";
+            actionBtn.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
             
-            if (nodes.formFeedback) {
-                nodes.formFeedback.style.display = "block";
-                nodes.formFeedback.style.background = "rgba(16, 185, 129, 0.08)";
-                nodes.formFeedback.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-                nodes.formFeedback.style.color = "#10B981";
-                nodes.formFeedback.innerHTML = `
-                    <strong>Secure Instance Ready for Ingestion!</strong><br>
-                    Generated Instance Authorization Handle: <code>UCG-${Math.floor(100000 + Math.random() * 900000)}</code>.<br>
-                    Our core engineers will reach out to you within 2 business hours.
+            if (elements.formFeedback) {
+                elements.formFeedback.style.display = "block";
+                elements.formFeedback.style.background = "rgba(16, 185, 129, 0.08)";
+                elements.formFeedback.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+                elements.formFeedback.style.color = "#10B981";
+                elements.formFeedback.innerHTML = `
+                    <strong>Success! Your system evaluation copy is ready.</strong><br>
+                    We have generated testing reference ID: <code>UNICORN-${Math.floor(100000 + Math.random() * 900000)}</code>.<br>
+                    Check your email inbox shortly for authorization guides.
                 `;
             }
             
             setTimeout(() => {
-                nodes.leadForm.reset();
-                if (nodes.formFeedback) nodes.formFeedback.style.display = "none";
-                executionButton.disabled = false;
-                executionButton.textContent = fallbackText;
-                executionButton.style.background = "";
-            }, 7000);
+                elements.leadForm.reset();
+                if (elements.formFeedback) elements.formFeedback.style.display = "none";
+                actionBtn.disabled = false;
+                actionBtn.textContent = fallbackText;
+                actionBtn.style.background = "";
+            }, 6000);
             
-        }, 1200);
+        }, 1500);
     });
 
-    // --- Init Bootstrap Routine ---
-    const initializeApplicationRouter = () => {
-        registerNavigationListeners();
-        startTerminalRotation();
-        
-        // Read hash path values if page triggers deep-links
-        if (window.location.hash) {
-            executeClientNavigation(window.location.hash);
-        } else {
-            executeClientNavigation("home");
-        }
-    };
-
-    initializeApplicationRouter();
+    // Initial Launch Routine
+    if (window.location.hash) {
+        switchActiveViewTo(window.location.hash);
+    } else {
+        switchActiveViewTo("home");
+    }
 });
